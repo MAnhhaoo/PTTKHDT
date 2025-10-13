@@ -1,0 +1,13 @@
+.container {
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.Img_Bg3{
+    background-image: url(../../assets/img/AH.jpg);
+    background-position:center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 40vh;
+}

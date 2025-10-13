@@ -1,0 +1,17 @@
+.container {
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.p_title{
+      margin: 23px 81px 0 43px;
+      color: #393B40;
+    font-size: 15px;
+}
+.footer_content a {
+  text-decoration: none;
+  color: #393B40; 
+}
+.footer_content a:hover {
+  color: #EB5C2C;
+}

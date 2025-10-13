@@ -1,0 +1,11 @@
+.col_title a {
+    color: white;
+}
+.col_title a:hover:last-child {
+    color: red;
+   
+}
+.col_title a:hover {
+    color: #F37004;
+
+}

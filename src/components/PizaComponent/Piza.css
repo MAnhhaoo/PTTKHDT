@@ -1,0 +1,12 @@
+.container {
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.Img_Bg{
+    background-image: url(../../assets/img/a2c04f07-aac7-4cf2-8a7a-c55e0f5d04ec_d97fb66a51f94de1bb9838f01298dade.jpg);
+   background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+        padding: 10px 0 0 0;
+    height: 365px;}

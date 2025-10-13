@@ -1,0 +1,29 @@
+.container1 {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.btn1 {
+    margin: 20px 0 20px 0;
+    
+    padding:   15px 35px;
+    border: none;
+    background-color:#F37004 ;
+    border-radius: 8px;
+}
+.btn1:hover{
+    background-color: #a86b39;
+    color: white;
+}
+.link{
+    text-decoration: underline;
+    color: blue;
+}
+.link:hover{
+    text-decoration: underline;
+    color:  #a86b39;
+}
+.img_right {
+    background-color: #DEEBFF;
+}

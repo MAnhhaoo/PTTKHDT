@@ -1,0 +1,69 @@
+.container {
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.IMG {
+  height: 100vh;
+  background: 
+    linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.7) 0%,   /* trắng nhưng mờ hơn */
+      rgba(255, 255, 255, 0.7) 50%, 
+      rgba(0, 0, 0, 0.6) 50%,       /* đen nhưng mờ hơn */
+      rgba(0, 0, 0, 0.6) 100%
+    ),
+    url("../../assets/img/home_main.jpg") center/cover no-repeat;
+}
+.menu_detail img{
+    width: 30%;
+    border-radius: 10px;
+}
+.menu_detail{
+    display: flex;
+}
+.menu_title {
+border-bottom: 1px dashed gray;
+
+}
+.btn_view {
+    margin-top: 20px;
+    background: #f37004;
+    border: none;
+    color: white;
+    border-radius: 30px;
+    padding: 11px 50px;
+    font-size: 14px;
+    min-width: 170px;
+    font-weight: 700;
+}
+.btn_view:hover {
+color: white;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+    background: #f58223;
+}
+
+.btn_view2 {
+    margin-top: 20px;
+    background: #f37004;
+    border: none;
+    color: white;
+    border-radius: 30px;
+    padding: 14px 54px;
+    font-size: 16px;
+    font-weight: 700;
+    min-width: 170px;
+}
+.btn_view2:hover {
+color: #f37004;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(105, 4, 4, 0.25);
+    background: white;
+}
+
+.content_right{
+        margin: 0px 161px;
+        font-size: 17px;
+    color: white;
+}
