@@ -1,0 +1,74 @@
+.container {
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.user-info-box {
+  width: 600px;
+  margin: 50px auto;
+  padding: 25px 30px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+.user-info-box h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.content_user {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.user-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-field label {
+  font-weight: 600;
+  color: #444;
+  font-size: 15px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #f37004;
+  box-shadow: 0 0 5px rgba(243, 112, 4, 0.3);
+}
+
+.input-group button {
+  background-color: #f37004;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.input-group button:hover {
+  background-color: #d45e00;
+}
