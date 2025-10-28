@@ -8,6 +8,7 @@ import MenuPage from "../pages/MenuPage/MenuPage";
 import NotfoundPage from "../pages/NotpundPage/NotfoundPage";
 import orderPage from "../pages/orderPage";
 import ProfilePage from "../pages/ProfilePage";
+import AdminLogin from "../pages/AdminPage/AdminLogin";
 
 export const routes = [
     {
@@ -52,11 +53,18 @@ export const routes = [
     } ,
  
      
+    {
+        path : '/adminlogin',
+        page: AdminLogin,
+        isShowHeader: false
+    } ,
+
       {
         path : '*',
         page: NotfoundPage ,
           isShowHeader: false
     } ,
+    
     
 
 ]
