@@ -29,7 +29,7 @@ function AboutComponent() {
                 </a>
             </p>
             <p>
-                <a href="">
+                <a href="/menu">
                     Tất cả sản phẩm
                 </a>
             </p>

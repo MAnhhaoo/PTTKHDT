@@ -1,122 +1,94 @@
-import React, { useState, useEffect } from 'react'
-import "./ProfilePage.css"
+import React, { useState } from 'react';
+import "./ProfilePage.css";
 import * as UserService from "../Service/UserService";
 import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from '@tanstack/react-query';
-import { updateUser } from '../redux/userSlide'; // Đã sửa tên file slice cho đúng cú pháp (slide -> slice)
+import { updateUser } from '../redux/userSlide';
 
 function ProfilePage() {
-    const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  // Các input luôn bắt đầu trống
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+
+  const mutation = useMutation({
+    mutationFn: ({ id, data }) => UserService.updateser(id, data),
+    onSuccess: (data) => {
+      const updatedUser = data.data;
+      dispatch(updateUser(updatedUser));
+      alert("Cập nhật thông tin thành công!");
+
+      // ✅ Reset input về trống
+      setName('');
+      setEmail('');
+      setPhone('');
+      setAddress('');
+    },
+    onError: (error) => {
+      console.error("Lỗi cập nhật:", error);
+      alert("Cập nhật thất bại!");
+    },
+  });
+
+  const handleUpdateAll = () => {
+    const userId = user?.id;
+    if (!userId) return alert("Không tìm thấy ID người dùng.");
+
+    const dataToUpdate = {};
+    if (name.trim()) dataToUpdate.name = name.trim();
+    if (email.trim()) dataToUpdate.email = email.trim();
+    if (phone.trim()) dataToUpdate.phone = phone.trim();
+    if (address.trim()) dataToUpdate.address = address.trim();
+
+    if (Object.keys(dataToUpdate).length === 0)
+      return alert("Vui lòng nhập ít nhất một thông tin cần cập nhật!");
+
+    mutation.mutate({ id: userId, data: dataToUpdate });
+  };
+
+  return (
     
-    console.log("Dữ liệu User hiện tại:", user); 
-    console.log("ID của User là:", user?.id); // Kiểm tra trường ID đúng là 'id'
-    
-    const [name , setName] = useState(user?.name || '')
-    const [email , setEmail] = useState(user?.email || '')
-    const [phone , setPhone] = useState(user?.phone || '')
-    const [address , setAddress] = useState(user?.address || '')
-    const dispatch = useDispatch();
+    <div className="profile-container">
+      <div className="profile-box">
+        <h2>Thông tin người dùng</h2>
 
-    // 💡 Cập nhật state local khi user Redux thay đổi (để đồng bộ khi load/update)
-    useEffect(() => {
-        if (user) {
-            setName(user.name || '');
-            setEmail(user.email || '');
-            setPhone(user.phone || '');
-            setAddress(user.address || '');
-        }
-    }, [user])
-    
-    // motation là để call API
-    const mutation = useMutation({
-        // Đã sửa để nhận ID và Data tách biệt
-        mutationFn: ({ id, data }) => UserService.updateser(id, data),
-        onSuccess: (data) => {
-            // Server trả về user đã được cập nhật
-            const updatedUser = data.data; 
-            // 1. Cập nhật Redux state (Sẽ tự động trigger useEffect và cập nhật UI)
-            dispatch(
-                updateUser(updatedUser) // Truyền object user đã cập nhật
-            );
-            
-           
-            
-            alert("Cập nhật thành công!");
-        },
-        onError: (error) => {
-            console.error("Lỗi cập nhật:", error);
-            alert("Lỗi cập nhật thông tin.");
-        },
-    })
-
-    // Hàm chung để xử lý cập nhật cho TỪNG trường
-    const handleUpdate = (field, value) => {
-        const userId = user?.id; 
-
-        if (!userId) { 
-            alert("Không tìm thấy ID người dùng.");
-            return;
-        }
-
-        const dataToUpdate = {
-            [field]: value
-        };
-
-        mutation.mutate({
-            id: userId,
-            data: dataToUpdate
-        });
-    }
-
-    return (
-        <div>
-            <div className='container'>
-                <div>
-                    <div className="user-info-box">
-                        <h2 style={{fontSize: "25px"}}>Thông tin người dùng</h2>
-                        <div className="content_user">
-                            {/* Cập nhật Tên */}
-                            <div className="user-field">
-                                {/* 💡 Giữ nguyên: user?.name đã tự động cập nhật nhờ Redux và useEffect */}
-                                <label>Tên {user?.name}</label> 
-                                <div className="input-group">
-                                    <input value={name} onChange={(e)=> setName(e.target.value)} type="text" placeholder="Nhập tên của bạn" />
-                                    <button onClick={() => handleUpdate('name', name)}>Cập nhật</button>
-                                </div>
-                            </div>
-
-                            {/* Cập nhật Email */}
-                            <div className="user-field">
-                                <label>Email {user?.email}</label>
-                                <div className="input-group">
-                                    <input value={email} onChange={(e)=> setEmail(e.target.value)} type="text" placeholder="Nhập email mới" />
-                                    <button onClick={() => handleUpdate('email', email)}>Cập nhật</button>
-                                </div>
-                            </div>
-
-                            {/* Cập nhật Số điện thoại */}
-                            <div className="user-field">
-                                <label>Số điện thoại {user?.phone}</label>
-                                <div className="input-group">
-                                    <input value={phone} onChange={(e)=> setPhone(e.target.value)} type="text" placeholder="Nhập số điện thoại" />
-                                    <button onClick={() => handleUpdate('phone', phone)}>Cập nhật</button>
-                                </div>
-                            </div>
-
-                            {/* Cập nhật Địa chỉ */}
-                            <div className="user-field">
-                                <label>Địa chỉ {user?.address}</label>
-                                <div className="input-group">
-                                    <input value={address} onChange={(e)=> setAddress(e.target.value)} type="text" placeholder="Nhập địa chỉ của bạn" />
-                                    <button onClick={() => handleUpdate('address', address)}>Cập nhật</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="user-info-display">
+          <p><strong>Tên:</strong> {user?.name || "Chưa có"}</p>
+          <p><strong>Email:</strong> {user?.email || "Chưa có"}</p>
+          <p><strong>Số điện thoại:</strong> {user?.phone || "Chưa có"}</p>
+          <p><strong>Địa chỉ:</strong> {user?.address || "Chưa có"}</p>
         </div>
-    )
+
+        <hr className="divider" />
+
+        <div className="profile-field">
+          <label>Tên </label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nhập tên " />
+        </div>
+
+        <div className="profile-field">
+          <label>Email </label>
+          <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Nhập email " />
+        </div>
+
+        <div className="profile-field">
+          <label>Số điện thoại </label>
+          <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Nhập số điện thoại " />
+        </div>
+
+        <div className="profile-field">
+          <label>Địa chỉ </label>
+          <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Nhập địa chỉ " />
+        </div>
+
+        <button className="update-btn" onClick={handleUpdateAll}>Cập nhật </button>
+      </div>
+    </div>
+  );
 }
 
-export default ProfilePage
+export default ProfilePage;

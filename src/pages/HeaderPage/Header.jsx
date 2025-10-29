@@ -19,7 +19,10 @@ const Header = () => {
       navigate("/login");
     } else if (key === "profile") {
       navigate("/profile");
+    }else if (key === "Cart") {
+      navigate("/cart");
     }
+    
   };
 
   // Menu dropdown
@@ -27,6 +30,10 @@ const Header = () => {
     {
       key: "profile",
       label: "Thông tin cá nhân",
+    },
+    {
+      key: "Cart",
+      label: "Giỏ hàng",
     },
     {
       key: "logout",
@@ -70,7 +77,7 @@ const Header = () => {
           <a href="/">
             <h2>Trang chủ</h2>
           </a>
-          <a href="/profile">
+          <a href="/about">
             <h2>Giới thiệu</h2>
           </a>
           <a href="/contact">
@@ -91,7 +98,7 @@ const Header = () => {
                 style={{ color: "white", cursor: "pointer" }}
               >
                 <h2>
-                  Xin chào {user?.name} <DownOutlined />
+                  {user?.name} <DownOutlined />
                 </h2>
               </a>
             </Dropdown>
@@ -105,7 +112,7 @@ const Header = () => {
           )}
 
           <div className="btn">
-            <a href="#" style={{ backgroundColor: "#F37004" }}>
+            <a href="/menu" style={{ backgroundColor: "#F37004" }}>
               <h2
                 style={{
                   backgroundColor: "#F37004",

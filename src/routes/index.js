@@ -1,3 +1,5 @@
+import CartComponent from "../components/CartComponent/CartComponent";
+import detailProduct from "../components/detailProduct/detailProduct";
 import LoginComponent from "../components/LoginComponent/LoginComponent";
 import Menu from "../components/MenuComponent/Menu";
 import SignupComponent from "../components/SigupComponent/SignupComponent";
@@ -36,6 +38,18 @@ export const routes = [
         page: LoginComponent,
         isShowHeader: true
     } ,
+    {
+        path : '/cart',
+        page: CartComponent,
+        isShowHeader: true
+    } ,
+     
+    {
+        path : '/detailProduct/:id',
+        page: detailProduct,
+        isShowHeader: true
+    } ,
+     
      {
         path : '/signup',
         page: SignupComponent,

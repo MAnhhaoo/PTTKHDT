@@ -1,6 +1,13 @@
 import React from 'react'
 import "./Index.css"
+import { useNavigate } from 'react-router-dom'
 const IndexComponent = () => {
+  const navigate = useNavigate();
+  const handleOrder = () => {
+    navigate('./menu')
+  }
+  
+
   return (
     <div>
          <div className="Img_Bg1">
@@ -13,7 +20,9 @@ const IndexComponent = () => {
             </div>
             <div>
                 <button  className='btn_order' style={{padding: "19px 40px"}}>Gọi đặt bàn</button>
-                <button className='btn_oderlast' >Đặt món online</button>
+                <button
+                onClick={handleOrder}
+                className='btn_oderlast' >Đặt món online</button>
             </div>
             </div> 
           </div>

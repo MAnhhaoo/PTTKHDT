@@ -3,7 +3,12 @@ import { Col, Row } from "antd";
 import h1 from "../../assets/img/grande.jpg";
 import h2 from "../../assets/img/img_home_main_order_right_2.png"
 import "./menu.css";
+import { useNavigate } from "react-router-dom";
 function Menu() {
+  const navigate = useNavigate()
+  const handleSeeProduct = () => {
+    navigate('/menu')
+  }
   return (
     <div>
       <div className="IMG">
@@ -143,7 +148,7 @@ function Menu() {
                     </div>
                   </div>
 
-                  <button className="btn_view">Xem tất cả</button>
+                  <button onClick={handleSeeProduct} className="btn_view">Xem tất cả</button>
                 </div>
               </Col>
               <Col span={12}>

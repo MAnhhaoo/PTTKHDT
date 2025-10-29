@@ -31,7 +31,7 @@ const Guide = () => {
             <p style={{margin: "40px 0" , fontSize: "15px"}}>
                 Chúng tôi tự hào về nhà hàng của mình với những sản phẩm chất <br /> lượng cao và cách phục vụ thân thiện. Luôn mang lại sự trải nghiệm <br /> tốt nhất cho khách hàng.
                 <br /> <br />
-                <a href="#" style={{color: "#F37004" , margin: "50px 0", textDecoration: "underline"}}>ĐẶT HÀNG NGAY</a>
+                <a href="/menu" style={{color: "#F37004" , margin: "50px 0", textDecoration: "underline"}}>ĐẶT HÀNG NGAY</a>
             </p>
             
           </div>
