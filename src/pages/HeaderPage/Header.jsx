@@ -21,6 +21,8 @@ const Header = () => {
       navigate("/profile");
     }else if (key === "Cart") {
       navigate("/cart");
+    }else if (key === "ListOrder") {
+      navigate("/Orderdetail");
     }
     
   };
@@ -31,9 +33,14 @@ const Header = () => {
       key: "profile",
       label: "Thông tin cá nhân",
     },
-    {
+   
+     {
       key: "Cart",
       label: "Giỏ hàng",
+    },
+      {
+      key: "ListOrder",
+      label: "Đơn hàng",
     },
     {
       key: "logout",

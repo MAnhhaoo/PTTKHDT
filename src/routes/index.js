@@ -1,5 +1,5 @@
 import CartComponent from "../components/CartComponent/CartComponent";
-import detailProduct from "../components/detailProduct/detailProduct";
+import detailProduct from "../components/DetailProduct/DetailProduct.jsx";
 import LoginComponent from "../components/LoginComponent/LoginComponent";
 import Menu from "../components/MenuComponent/Menu";
 import SignupComponent from "../components/SigupComponent/SignupComponent";
@@ -11,6 +11,7 @@ import NotfoundPage from "../pages/NotpundPage/NotfoundPage";
 import orderPage from "../pages/orderPage";
 import ProfilePage from "../pages/ProfilePage";
 import AdminLogin from "../pages/AdminPage/AdminLogin";
+import OrderDetail from "../components/OrderComponent/OrderDetail.jsx";
 
 export const routes = [
     {
@@ -71,6 +72,11 @@ export const routes = [
         path : '/adminlogin',
         page: AdminLogin,
         isShowHeader: false
+    } ,
+    {
+        path : '/Orderdetail',
+        page: OrderDetail,
+        isShowHeader: true
     } ,
 
       {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,21 +17,25 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import * as ProductService from "../../Service/ProductService";
+import { message } from "antd";
 
 const CategoryManagement = () => {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Pizza", description: "Các loại pizza đặc biệt" },
-    { id: 2, name: "Đồ uống", description: "Bia, nước ngọt, nước trái cây" },
-    { id: 3, name: "Món ăn kèm", description: "Khoai tây chiên, salad..." },
-  ]);
-
+  const [categories, setCategories] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState({
-    id: null,
-    name: "",
-    description: "",
-  });
+  const [currentCategory, setCurrentCategory] = useState({ id: null, name: "", description: "" });
+
+  useEffect(() => { fetchCategories(); }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await ProductService.getAllCategory();
+      setCategories(res.data || []);
+    } catch {
+      message.error("Không thể tải danh mục!");
+    }
+  };
 
   const handleOpenDialog = (category = null) => {
     if (category) {
@@ -44,169 +48,97 @@ const CategoryManagement = () => {
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => setOpenDialog(false);
-
-  const handleSaveCategory = () => {
-    if (editMode) {
-      setCategories((prev) =>
-        prev.map((c) => (c.id === currentCategory.id ? currentCategory : c))
-      );
-    } else {
-      const newCategory = {
-        ...currentCategory,
-        id: categories.length + 1,
-      };
-      setCategories([...categories, newCategory]);
+  const handleSaveCategory = async () => {
+    if (!currentCategory.name.trim()) {
+      message.warning("Vui lòng nhập tên danh mục!");
+      return;
     }
-    setOpenDialog(false);
+
+    try {
+      if (editMode) {
+        await ProductService.updateCategory(currentCategory._id, currentCategory);
+        message.success("Cập nhật danh mục thành công!");
+      } else {
+        await ProductService.createCategory(currentCategory);
+        message.success("Thêm danh mục thành công!");
+      }
+      setOpenDialog(false);
+      fetchCategories();
+    } catch {
+      message.error("Lưu danh mục thất bại!");
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa danh mục này không?")) {
-      setCategories(categories.filter((c) => c.id !== id));
+      try {
+        await ProductService.deleteCategory(id);
+        message.success("Xóa danh mục thành công!");
+        fetchCategories();
+      } catch {
+        message.error("Xóa thất bại!");
+      }
     }
   };
 
   return (
-    <Box
-      sx={{
-        p: 4,
-        zoom: 1.15,
-        transformOrigin: "top left",
-      }}
-    >
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        gutterBottom
-        sx={{ mb: 3 }}
-      >
-        Quản lý danh mục
-      </Typography>
+    <Box sx={{ p: 4 }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>Quản lý danh mục</Typography>
 
-      {/* Nút thêm */}
-      <Box sx={{ mb: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-          sx={{
-            fontSize: "1.1rem",
-            fontWeight: "bold",
-            px: 3,
-            py: 1.3,
-          }}
-        >
-          Thêm danh mục
-        </Button>
-      </Box>
+      <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
+        Thêm danh mục
+      </Button>
 
-      {/* Bảng danh mục */}
-      <Table
-        sx={{
-          backgroundColor: "#fff",
-          boxShadow: 3,
-          borderRadius: 2,
-          "& th, & td": { fontSize: "1.05rem", padding: "16px 18px" },
-        }}
-      >
-        <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+      <Table sx={{ mt: 3 , zoom: 1.3 }}>
+        <TableHead>
           <TableRow>
-            <TableCell><strong>ID</strong></TableCell>
-            <TableCell><strong>Tên danh mục</strong></TableCell>
-            <TableCell><strong>Mô tả</strong></TableCell>
-            <TableCell align="center"><strong>Thao tác</strong></TableCell>
+            <TableCell>ID</TableCell>
+            <TableCell>Tên danh mục</TableCell>
+            <TableCell>Mô tả</TableCell>
+            <TableCell>Thao tác</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {categories.map((category) => (
-            <TableRow key={category.id} hover>
-              <TableCell>{category.id}</TableCell>
-              <TableCell>{category.name}</TableCell>
-              <TableCell>{category.description}</TableCell>
-              <TableCell align="center">
-                <Button
-                  color="warning"
-                  variant="outlined"
-                  startIcon={<EditIcon />}
-                  onClick={() => handleOpenDialog(category)}
-                  sx={{ mr: 1, fontWeight: "bold" }}
-                >
-                  Sửa
-                </Button>
-                <Button
-                  color="error"
-                  variant="outlined"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => handleDelete(category.id)}
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Xóa
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {categories.length > 0 ? (
+            categories.map((c) => (
+              <TableRow key={c._id}>
+                <TableCell>{c._id}</TableCell>
+                <TableCell>{c.name}</TableCell>
+                <TableCell>{c.description}</TableCell>
+                <TableCell>
+                  <Button onClick={() => handleOpenDialog(c)} startIcon={<EditIcon />}>Sửa</Button>
+                  <Button onClick={() => handleDelete(c._id)} color="error" startIcon={<DeleteIcon />}>Xóa</Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow><TableCell colSpan={4} align="center">Không có danh mục</TableCell></TableRow>
+          )}
         </TableBody>
       </Table>
 
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            p: 3,
-            borderRadius: 3,
-            zoom: 1.15,
-          },
-        }}
-      >
-        <DialogTitle sx={{ fontSize: "1.6rem", fontWeight: "bold", textAlign: "center" }}>
-          {editMode ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}
-        </DialogTitle>
-        <DialogContent sx={{ mt: 1 }}>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>{editMode ? "Sửa danh mục" : "Thêm danh mục"}</DialogTitle>
+        <DialogContent>
           <TextField
-            margin="dense"
             label="Tên danh mục"
             fullWidth
+            margin="dense"
             value={currentCategory.name}
-            onChange={(e) =>
-              setCurrentCategory({ ...currentCategory, name: e.target.value })
-            }
-            InputProps={{ style: { fontSize: "1.2rem", padding: "10px" } }}
-            InputLabelProps={{ style: { fontSize: "1.1rem" } }}
+            onChange={(e) => setCurrentCategory({ ...currentCategory, name: e.target.value })}
           />
           <TextField
-            margin="dense"
             label="Mô tả"
             fullWidth
             multiline
-            rows={4}
+            margin="dense"
             value={currentCategory.description}
-            onChange={(e) =>
-              setCurrentCategory({
-                ...currentCategory,
-                description: e.target.value,
-              })
-            }
-            InputProps={{ style: { fontSize: "1.1rem", padding: "10px" } }}
-            InputLabelProps={{ style: { fontSize: "1rem" } }}
+            onChange={(e) => setCurrentCategory({ ...currentCategory, description: e.target.value })}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleCloseDialog} sx={{ fontSize: "1.1rem" }}>
-            Hủy
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSaveCategory}
-            sx={{ fontSize: "1.1rem", fontWeight: "bold" }}
-          >
-            Lưu
-          </Button>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Hủy</Button>
+          <Button onClick={handleSaveCategory}>Lưu</Button>
         </DialogActions>
       </Dialog>
     </Box>

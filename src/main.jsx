@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRoot } from 'react-dom/client'
 import { store } from '../src/redux/store.js'
 import { Provider } from 'react-redux'
+import { CartProvider } from './context/CartContext.jsx';
 import './index.css'
 import App from './App.jsx'
 import { 
@@ -14,7 +15,9 @@ const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
      <QueryClientProvider client={queryClient}>    <Provider store={store}>  <StrictMode>
+      <CartProvider>
     <App />
+    </CartProvider>
   </StrictMode>
   </Provider>
     <ReactQueryDevtools initialIsOpen={false} />
