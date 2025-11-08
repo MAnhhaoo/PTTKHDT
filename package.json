@@ -20,6 +20,7 @@
     "@tanstack/react-query-devtools": "^5.90.2",
     "antd": "^5.27.3",
     "axios": "^1.12.2",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.552.0",

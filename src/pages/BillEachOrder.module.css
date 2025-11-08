@@ -1,0 +1,318 @@
+/* File: frontend/src/pages/BillEachOrder.module.css */
+
+/* --- Biến CSS (Dễ tùy chỉnh) --- */
+:root {
+    --primary-color: #4f46e5; /* Indigo */
+    --primary-light: #e0e7ff;
+    --text-dark: #1a202c;
+    --text-medium: #718096;
+    --bg-white: #ffffff;
+    --border-light: #e2e8f0;
+    font-size: 16px; 
+}
+
+/* --- TỔNG THỂ CONTAINER --- */
+.detailContainer {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f7f9fc;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.mainTitle {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    border-bottom: 4px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.sectionWrapper {
+    margin-bottom: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-left: 10px;
+    position: relative;
+}
+
+.sectionTitle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 80%;
+    width: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* --- TÓM TẮT ĐƠN HÀNG (SUMMARY GRID) --- */
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.summaryCard {
+    padding: 1.2rem;
+    background-color: var(--bg-white);
+    border-radius: 10px;
+    border: 1px solid var(--primary-light);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.summaryLabel {
+    font-size: 0.9rem;
+    color: var(--text-medium);
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+}
+
+.orderIdText {
+    font-size: 1.2rem;
+    color: var(--primary-color) !important;
+    font-weight: 900;
+}
+
+/* --- THÔNG TIN VẬN CHUYỂN --- */
+.shippingBox {
+    padding: 1.5rem;
+    background-color: #eef1f6;
+    border-radius: 8px;
+    line-height: 1.8;
+    color: #4a5568;
+}
+
+.shippingBox strong {
+    color: var(--text-dark);
+}
+
+
+/* --- DANH SÁCH SẢN PHẨM --- */
+.itemList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.itemCard {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background-color: var(--bg-white);
+    transition: all 0.2s;
+}
+
+.itemCard:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.itemImage {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 1.5rem;
+    border: 1px solid #eee;
+}
+
+.itemInfo {
+    flex-grow: 1;
+}
+
+.itemName {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text-dark);
+    margin-bottom: 0.3rem;
+}
+
+.itemPrice {
+    color: #065f46; /* Green */
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.itemQuantity {
+    text-align: right;
+    width: 150px;
+    font-size: 0.95rem;
+}
+.itemSubtotal {
+    color: #b91c1c; /* Red */
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: block;
+    margin-top: 0.2rem;
+}
+
+/* --- TỔNG THANH TOÁN --- */
+.totalBox {
+    max-width: 450px;
+    margin-left: auto;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border: 3px solid var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #cccccc;
+    font-size: 1.05rem;
+    color: var(--text-dark);
+}
+
+.totalRowTotal {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.finalTotal {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    font-weight: 900;
+}
+
+/* --- NÚT BACK --- */
+.backButtonTop {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    padding: 5px 0;
+    transition: color 0.2s;
+}
+
+.backButtonTop:hover {
+    color: #3730a3;
+    text-decoration: underline;
+}
+
+/* --- STATUS BADGES (Tái sử dụng) --- */
+.statusBadge {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 20px;
+    border: 1px solid transparent;
+}
+.statusSuccess { background-color: #d1fae5; color: #065f46; border-color: #34d399; }
+.statusCancelled { background-color: #fee2e2; color: #991b1b; border-color: #f87171; }
+.statusShipping { background-color: #dbeafe; color: #1e40af; border-color: #60a5fa; }
+.statusConfirmed { background-color: #e0e7ff; color: #3730a3; border-color: #818cf8; }
+.statusPending { background-color: #fffbeb; color: #92400e; border-color: #fcd34d; }
+.statusDefault { background-color: #f7fafc; color: #4a5568; border-color: #a0aec0; }
+
+/* --- LOADING/ERROR --- */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.loadingContainer, .emptyContainer {
+    text-align: center;
+    padding: 5rem 1rem;
+}
+.spinner {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid var(--primary-light);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+.loadingText {
+    margin-top: 1rem;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+.errorBox {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 1.5rem;
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(252, 165, 165, 0.3);
+}
+.errorTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.errorDetail {
+    padding: 0 1rem;
+}
+.backButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #dc2626; /* Red */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+.backButton:hover {
+    background-color: #b91c1c;
+}
+
+/* --- Responsive design --- */
+@media (max-width: 768px) {
+    .detailContainer {
+        padding: 1rem;
+    }
+    .mainTitle {
+        font-size: 2rem;
+    }
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+    .itemCard {
+        flex-wrap: wrap;
+        padding: 0.75rem;
+    }
+    .itemImage {
+        width: 60px;
+        height: 60px;
+        margin-right: 1rem;
+    }
+    .itemQuantity {
+        text-align: left;
+        width: 100%;
+        margin-top: 0.5rem;
+        border-top: 1px dashed #eee;
+        padding-top: 0.5rem;
+    }
+    .totalBox {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,203 @@
+/* File: frontend/src/pages/OrderHistory.module.css */
+
+/* --- Biến CSS (Tùy chỉnh màu sắc tại đây) --- */
+:root {
+    --primary-color: #4f46e5; /* Indigo */
+    --primary-light: #e0e7ff;
+    --text-dark: #1a202c;
+    --text-medium: #718096;
+    --bg-white: #ffffff;
+    --border-light: #e2e8f0;
+    /* Tăng kích thước phông chữ cơ bản */
+    font-size: 17px; 
+}
+
+/* --- TỔNG THỂ VÀ TIÊU ĐỀ --- */
+.orderHistoryContainer {
+    max-width: 1200px; /* Tăng chiều rộng tối đa */
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem; /* Tăng padding */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.mainTitle {
+    font-size: 1rem; /* Rất lớn */
+    font-weight: 800; 
+    margin-bottom: 2.5rem;
+    color: var(--text-dark);
+    border-bottom: 5px solid var(--primary-color); /* Tăng độ dày border */
+    padding-bottom: 0.75rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.orderList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Tăng khoảng cách giữa các thẻ */
+}
+
+/* --- THẺ ĐƠN HÀNG (ORDER CARD) --- */
+.orderCard {
+    background-color: var(--bg-white);
+    padding: 0.5rem; /* Tăng padding thẻ */
+    border: 1px solid var(--border-light);
+    border-radius: 14px; /* Tăng bo góc nhẹ */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Đổ bóng mạnh hơn */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+}
+
+.orderCard:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Hiệu ứng nâng mạnh hơn */
+    border-color: var(--primary-color);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px dashed #cccccc; 
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.orderId {
+    font-weight: 700;
+    font-size: 1.2rem; /* Tăng kích thước mã đơn hàng */
+    color: var(--text-dark);
+    transition: color 0.3s;
+}
+
+.orderCard:hover .orderId {
+    color: var(--primary-color);
+}
+
+.orderDate {
+    font-size: 1rem; /* Tăng kích thước ngày đặt */
+    color: var(--text-medium);
+    margin-top: 0.5rem;
+}
+
+/* --- TRẠNG THÁI (STATUS BADGES) --- */
+.statusBadge {
+    padding: 0.5rem 1.2rem; /* Tăng padding badge */
+    font-size: 0.95rem; /* Tăng kích thước chữ badge */
+    font-weight: 700;
+    border-radius: 25px; 
+    border: 1px solid transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Giữ nguyên màu trạng thái */
+
+
+/* --- CHI TIẾT ĐƠN HÀNG --- */
+.cardBody {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem; /* Tăng khoảng cách chi tiết */
+    color: #4a5568; 
+    padding-bottom: 1rem;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    color: var(--primary-color);
+    margin-right: 0.75rem; /* Tăng khoảng cách icon */
+    font-size: 1.4rem; /* Tăng kích thước icon */
+}
+
+.detailLabel {
+    font-weight: 600;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.totalPrice {
+    margin-left: auto;
+    font-weight: 900; /* Rất đậm */
+    font-size: 1rem; /* Rất lớn cho giá tiền */
+    color: #10b981; 
+}
+
+.itemCount {
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+/* --- CARD FOOTER VÀ LINK --- */
+.cardFooter {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f7fafc; 
+    text-align: right;
+}
+
+.detailLink {
+    font-size: 1.05rem; /* Tăng kích thước link */
+    color: var(--primary-color);
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+.detailLink:hover {
+    color: #3730a3; 
+    text-decoration: underline;
+}
+
+/* --- TRẠNG THÁI KHÁC (LOADING/ERROR/EMPTY) --- */
+/* Tăng kích thước chữ/icon ở trạng thái lỗi/rỗng */
+.loadingContainer, .emptyContainer {
+    text-align: center;
+    padding: 6rem 1rem;
+}
+
+.emptyIcon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    color: #cbd5e0;
+}
+
+.emptyTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-medium);
+}
+
+.emptyText {
+    font-size: 1.1rem;
+    color: #a0aec0;
+}
+
+.loadingText {
+    margin-top: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* --- Responsive design (Cho màn hình nhỏ) --- */
+@media (max-width: 768px) {
+    .orderHistoryContainer {
+        padding: 1.5rem 1rem;
+    }
+    .mainTitle {
+        font-size: 2.5rem;
+    }
+    .cardBody {
+        grid-template-columns: 1fr; 
+        gap: 1rem;
+    }
+    .orderId {
+        font-size: 1.4rem;
+    }
+    .totalPrice {
+        font-size: 1.2rem;
+    }
+}

@@ -3,9 +3,8 @@ import axios from "axios";
 const BASE_URL = `${import.meta.env.VITE_API_URL_BACKEND}/api/product`;
 
 // ---------- PRODUCT ----------
-export const getAllProduct = async ({ limit, page }) =>
-  (await axios.get(`${BASE_URL}/getAllProduct`, { params: { limit, page } })).data;
-
+export const getAllProduct = async (params) =>
+    (await axios.get(`${BASE_URL}/getAllProduct`, { params })).data;
 export const getProductById = async (id) =>
   (await axios.get(`${BASE_URL}/getProduct/${id}`)).data;
 

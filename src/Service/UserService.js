@@ -13,10 +13,23 @@ export const updateser = async (id ,data) => {
     return res.data
 }
 
-export const getAllUser = async () =>{
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/user/getAlluser`)
-    return res.data
-}
+export const updateUserStatus = async (id, isBlocked) => {
+  const res = await axios.put(`${import.meta.env.VITE_API_URL_BACKEND}/api/user/updateUserStatus/${id}`, { isBlocked });
+  return res.data;
+};
+// File: UserService.js (Frontend Service)
+
+// import axios, { BASE_URL }...
+// Giả sử BASE_URL đã được định nghĩa
+
+export const getAllUser = async (search = '') => {
+    // ✅ Đảm bảo tham số được đặt tên là 'search' như Backend Controller mong đợi
+    const params = search ? { search } : {}; 
+    
+    // ✅ Kiểm tra lại URL: ${import.meta.env.VITE_API_URL_BACKEND}/api/user/getAlluser
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/user/getAlluser`, { params });
+    return res.data;
+};
 
 export const deleteUser = async (id) =>{
     const res = await axios.delete(`${import.meta.env.VITE_API_URL_BACKEND}/api/user/deleteUser/${id}`)

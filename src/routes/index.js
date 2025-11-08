@@ -12,6 +12,7 @@ import orderPage from "../pages/orderPage";
 import ProfilePage from "../pages/ProfilePage";
 import AdminLogin from "../pages/AdminPage/AdminLogin";
 import OrderDetail from "../components/OrderComponent/OrderDetail.jsx";
+import BillEachOrder from "../pages/BillEachOrder.jsx";
 
 export const routes = [
     {
@@ -24,6 +25,12 @@ export const routes = [
         page: ProfilePage , 
         isShowHeader: true
     } ,
+     {
+        path : '/orderEachProduct/:orderId',
+        page: BillEachOrder , 
+        isShowHeader: true
+    } ,
+     
      {
         path : '/order',
         page: orderPage,
