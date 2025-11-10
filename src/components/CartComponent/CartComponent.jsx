@@ -1,26 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Trash2, Plus, Minus } from "lucide-react";
-import { useCart } from "../../context/CartContext"; // ⬅️ IMPORT useCart
+import { useCart } from "../../context/CartContext";
 import "./CartComponent.css";
 
-const API_URL = "http://localhost:3002/api/order/create"; // Đảm bảo URL Backend đúng
+const API_URL = "http://localhost:3002/api/order/create";
 
 const CartComponent = () => {
-    const { 
-        cartItems: cart, 
-        updateQuantity, 
-        removeItem,
-        clearCart
-    } = useCart(); // ⬅️ SỬ DỤNG CONTEXT
-    
-    // Helper functions sử dụng Context
-    const increaseQty = (id) => updateQuantity(id, cart.find(item => item._id === id).quantity + 1);
+    const { cartItems: cart, updateQuantity, removeItem, clearCart } = useCart();
+
+    // 🟢 Thêm state để lưu phương thức thanh toán
+    const [paymentMethod, setPaymentMethod] = useState("COD");
+
+    const increaseQty = (id) =>
+        updateQuantity(id, cart.find((item) => item._id === id).quantity + 1);
+
     const decreaseQty = (id) => {
-        const currentQty = cart.find(item => item._id === id).quantity;
+        const currentQty = cart.find((item) => item._id === id).quantity;
         if (currentQty > 1) {
-             updateQuantity(id, currentQty - 1);
+            updateQuantity(id, currentQty - 1);
         }
-    }
+    };
+
     const handleRemove = (id) => removeItem(id);
 
     const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -32,37 +32,34 @@ const CartComponent = () => {
             return;
         }
 
-        // Chuẩn bị dữ liệu `orderItems`
         const orderItems = cart.map((item) => ({
-    product: item._id, 
-    name: item.name,
-    qty: item.quantity, // 🟢 ĐÃ ĐỔI THÀNH qty
-    image: item.image,
-    price: item.price,
-}));
+            product: item._id,
+            name: item.name,
+            qty: item.quantity,
+            image: item.image,
+            price: item.price,
+        }));
 
         const itemPrice = total;
         const shippingPrice = 20000;
-        const taxPrice = 0; 
+        const taxPrice = 0;
         const totalPrice = itemPrice + shippingPrice + taxPrice;
-        
-        // ⚠️ Lưu ý: Bạn cần thay thế thông tin shippingAddress cứng bằng dữ liệu từ form
+
         const orderData = {
             orderItems,
             shippingAddress: {
                 fullName: "Khách hàng Test",
                 address: "Số 123, Đường ABC, TP HCM",
                 phone: "0901234567",
-            }, 
+            },
             itemPrice,
             shippingPrice,
             taxPrice,
             totalPrice,
-            // user ID sẽ được Backend lấy từ token
+            paymentMethod, // 🟢 GỬI LÊN BACKEND
         };
-        
-        // Lấy token từ localStorage (Cần có chức năng Login)
-        const token = localStorage.getItem('access_token'); 
+
+        const token = localStorage.getItem("access_token");
         if (!token) {
             alert("Bạn cần đăng nhập để đặt hàng!");
             return;
@@ -73,7 +70,7 @@ const CartComponent = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    'Authorization': `Bearer ${token}`, // ⬅️ GỬI TOKEN
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(orderData),
             });
@@ -82,7 +79,7 @@ const CartComponent = () => {
 
             if (response.ok && data.status === 201) {
                 alert("Đặt hàng thành công! Đơn hàng ID: " + data.data._id);
-                clearCart(); // Xóa giỏ hàng sau khi đặt hàng
+                clearCart();
             } else {
                 alert(`Đặt hàng thất bại: ${data.message || "Lỗi không xác định"}`);
             }
@@ -104,7 +101,10 @@ const CartComponent = () => {
                         {cart.map((item) => (
                             <div key={item._id} className="cart-item">
                                 <div className="item-info">
-                                    <img src={`http://localhost:3002${item.image}`} alt={item.name} />
+                                    <img
+                                        src={`http://localhost:3002${item.image}`}
+                                        alt={item.name}
+                                    />
                                     <div>
                                         <h2>{item.name}</h2>
                                         <p>{item.price.toLocaleString()}₫</p>
@@ -141,6 +141,31 @@ const CartComponent = () => {
                             <span>Phí vận chuyển:</span>
                             <span>20.000₫</span>
                         </div>
+                        <hr />
+
+                        {/* 🟢 CHỌN PHƯƠNG THỨC THANH TOÁN */}
+                        <div className="payment-method">
+                            <h3>Phương thức thanh toán</h3>
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="COD"
+                                    checked={paymentMethod === "COD"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                />
+                                Thanh toán khi nhận hàng (COD)
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="Bank Transfer"
+                                    checked={paymentMethod === "Bank Transfer"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                />
+                                Chuyển khoản ngân hàng
+                            </label>
+                        </div>
+
                         <hr />
                         <div className="summary-total">
                             <span>Tổng cộng:</span>

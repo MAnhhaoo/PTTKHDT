@@ -6,6 +6,9 @@ const IndexComponent = () => {
   const handleOrder = () => {
     navigate('./menu')
   }
+  const handleContact = () => {
+    navigate('./contact')
+  }
   
 
   return (
@@ -19,7 +22,7 @@ const IndexComponent = () => {
                 <h1 style={{fontSize : "60px"}}>PIZZA & BIA</h1>
             </div>
             <div>
-                <button  className='btn_order' style={{padding: "19px 40px"}}>Gọi đặt bàn</button>
+                <button onClick={handleContact}  className='btn_order' style={{padding: "19px 40px"}}>Gọi đặt bàn</button>
                 <button
                 onClick={handleOrder}
                 className='btn_oderlast' >Đặt món online</button>

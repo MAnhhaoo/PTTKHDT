@@ -73,7 +73,7 @@ const BillEachOrder = () => {
 
     if (error) return (
         <div className={styles.errorBox}>
-            <h2 className={styles.errorTitle}>❌ Lỗi Tải Dữ Liệu</h2>
+            <h2 className={styles.errorTitle}> Lỗi Tải Dữ Liệu</h2>
             <p className={styles.errorDetail}>{error}</p>
             <button 
                 className={styles.backButton}
@@ -149,7 +149,7 @@ const BillEachOrder = () => {
                             
                             {/* 🌟 Hiển thị Số lượng và Thành tiền */}
                             <div className={styles.itemQuantity}>
-                                <p>Số lượng: **{item.qty}**</p>
+                                <p>Số lượng: {item.qty}</p>
                                 <p>Thành tiền: 
                                     <strong className={styles.itemSubtotal}>
                                         {(item.price * item.qty).toLocaleString('vi-VN')} VNĐ
