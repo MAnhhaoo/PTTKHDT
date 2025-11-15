@@ -1,4 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+// File: src/context/CartContext.js
+
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
 const CartContext = createContext();
 
@@ -17,7 +19,7 @@ export const CartProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
     }, [cartItems]);
-
+    
     // Thêm sản phẩm
     const addToCart = (product, quantity = 1) => {
         setCartItems(prevItems => {
@@ -57,8 +59,39 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     }
 
+    // 🟢 HÀM MỚI: THÊM NHIỀU SẢN PHẨM CÙNG LÚC (Dành cho chức năng Mua lại)
+    const addMultipleItems = useCallback((newItems) => {
+        setCartItems(prevItems => {
+            let updatedItems = [...prevItems];
+
+            newItems.forEach(newItem => {
+                // Đơn hàng cũ dùng 'product' làm ID và 'qty' làm số lượng
+                const productId = newItem.product; 
+                const itemQty = newItem.qty; 
+
+                // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+                const existingItemIndex = updatedItems.findIndex(item => item._id === productId);
+
+                if (existingItemIndex > -1) {
+                    // Nếu đã có: Cập nhật tăng số lượng
+                    updatedItems[existingItemIndex].quantity += itemQty;
+                } else {
+                    // Nếu chưa có: Thêm sản phẩm mới vào (với key _id là ID sản phẩm)
+                    updatedItems.push({
+                        _id: productId,
+                        name: newItem.name,
+                        price: newItem.price,
+                        image: newItem.image, // Lưu đường dẫn ảnh từ đơn hàng cũ
+                        quantity: itemQty,
+                    });
+                }
+            });
+            return updatedItems;
+        });
+    }, []); 
+
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeItem, clearCart }}>
+        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeItem, clearCart, addMultipleItems }}>
             {children}
         </CartContext.Provider>
     );

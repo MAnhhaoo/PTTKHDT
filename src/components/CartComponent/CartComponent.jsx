@@ -1,15 +1,57 @@
-import React, { useState } from "react";
+// File: src/components/CartComponent/CartComponent.js (Đã sửa logic hiển thị ảnh)
+
+import React, {  useEffect } from "react"; 
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import "./CartComponent.css";
+import { useNavigate } from "react-router-dom"; 
 
-const API_URL = "http://localhost:3002/api/order/create";
+// 💡 ĐẶT BASE URL ẢNH Ở ĐÂY
+const BASE_URL = "http://localhost:3002"; 
+const DEFAULT_IMAGE_PATH = "/default_product.png"; // Thay bằng đường dẫn ảnh mặc định nếu có
 
 const CartComponent = () => {
-    const { cartItems: cart, updateQuantity, removeItem, clearCart } = useCart();
+    const { cartItems: cart, updateQuantity, removeItem,  addMultipleItems } = useCart();
+    const navigate = useNavigate(); 
+    // const [paymentMethod, setPaymentMethod] = useState("COD"); 
 
-    // 🟢 Thêm state để lưu phương thức thanh toán
-    const [paymentMethod, setPaymentMethod] = useState("COD");
+    // 🟢 LOGIC MUA LẠI: ĐỌC DỮ LIỆU TỪ LOCAL STORAGE
+    useEffect(() => {
+        const reorderItemsJson = localStorage.getItem('reorderItems');
+        
+        if (reorderItemsJson) {
+            try {
+                const itemsToReorder = JSON.parse(reorderItemsJson);
+                if (itemsToReorder.length > 0) {
+                    addMultipleItems(itemsToReorder); 
+                }
+                localStorage.removeItem('reorderItems');
+            } catch (error) {
+                console.error("Lỗi khi phân tích dữ liệu mua lại:", error);
+                localStorage.removeItem('reorderItems'); 
+                alert("Lỗi tải đơn hàng mua lại. Vui lòng thử lại.");
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addMultipleItems]); 
+
+    // 💡 HÀM XỬ LÝ ĐƯỜNG DẪN ẢNH CHUẨN HÓA
+    const getImageUrl = (imagePath) => {
+        // Nếu không có đường dẫn hoặc đường dẫn không hợp lệ
+        if (!imagePath || typeof imagePath !== 'string' || imagePath.length < 5 || imagePath.toLowerCase().includes('default')) {
+             return `${BASE_URL}${DEFAULT_IMAGE_PATH}`;
+        }
+        
+        // 1. Kiểm tra nếu imagePath đã là đường dẫn tuyệt đối (có http/https)
+        if (imagePath.startsWith('http') || imagePath.startsWith('https')) {
+            return imagePath;
+        }
+        
+        // 2. Nếu là đường dẫn tương đối (ví dụ: /uploads/...)
+        const cleanedPath = imagePath.startsWith('/') ? imagePath : '/' + imagePath;
+        return `${BASE_URL}${cleanedPath}`;
+    };
+
 
     const increaseQty = (id) =>
         updateQuantity(id, cart.find((item) => item._id === id).quantity + 1);
@@ -25,39 +67,11 @@ const CartComponent = () => {
 
     const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-    // 🌟 HÀM XỬ LÝ THANH TOÁN VÀ GỌI API
-    const handleCheckout = async () => {
+    const handleCheckout = () => {
         if (cart.length === 0) {
             alert("Giỏ hàng trống!");
             return;
         }
-
-        const orderItems = cart.map((item) => ({
-            product: item._id,
-            name: item.name,
-            qty: item.quantity,
-            image: item.image,
-            price: item.price,
-        }));
-
-        const itemPrice = total;
-        const shippingPrice = 20000;
-        const taxPrice = 0;
-        const totalPrice = itemPrice + shippingPrice + taxPrice;
-
-        const orderData = {
-            orderItems,
-            shippingAddress: {
-                fullName: "Khách hàng Test",
-                address: "Số 123, Đường ABC, TP HCM",
-                phone: "0901234567",
-            },
-            itemPrice,
-            shippingPrice,
-            taxPrice,
-            totalPrice,
-            paymentMethod, // 🟢 GỬI LÊN BACKEND
-        };
 
         const token = localStorage.getItem("access_token");
         if (!token) {
@@ -65,28 +79,7 @@ const CartComponent = () => {
             return;
         }
 
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(orderData),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.status === 201) {
-                alert("Đặt hàng thành công! Đơn hàng ID: " + data.data._id);
-                clearCart();
-            } else {
-                alert(`Đặt hàng thất bại: ${data.message || "Lỗi không xác định"}`);
-            }
-        } catch (error) {
-            console.error("Lỗi khi tạo đơn hàng:", error);
-            alert("Lỗi kết nối hoặc server không phản hồi.");
-        }
+        navigate("/ship"); 
     };
 
     return (
@@ -101,8 +94,9 @@ const CartComponent = () => {
                         {cart.map((item) => (
                             <div key={item._id} className="cart-item">
                                 <div className="item-info">
+                                    {/* 🟢 SỬ DỤNG HÀM getImageUrl ĐÃ CẢI TIẾN */}
                                     <img
-                                        src={`http://localhost:3002${item.image}`}
+                                        src={getImageUrl(item.image)}
                                         alt={item.name}
                                     />
                                     <div>
@@ -143,27 +137,10 @@ const CartComponent = () => {
                         </div>
                         <hr />
 
-                        {/* 🟢 CHỌN PHƯƠNG THỨC THANH TOÁN */}
                         <div className="payment-method">
                             <h3>Phương thức thanh toán</h3>
-                            <label>
-                                <input
-                                    type="radio"
-                                    value="COD"
-                                    checked={paymentMethod === "COD"}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                />
-                                Thanh toán khi nhận hàng (COD)
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    value="Bank Transfer"
-                                    checked={paymentMethod === "Bank Transfer"}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                />
-                                Chuyển khoản ngân hàng
-                            </label>
+                            <label>Thanh toán khi nhận hàng (COD)</label>
+                            <label>Chuyển khoảng</label>
                         </div>
 
                         <hr />

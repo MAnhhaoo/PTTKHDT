@@ -1,18 +1,19 @@
 import React, { useState, useEffect, forwardRef, useRef } from "react";
 import {
-  Box,
-  Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Button,
-  Chip,
-  Slide,
-  TextField,
-  Stack,
-  InputAdornment,
+ Box,
+ Typography,
+ Table,
+ TableHead,
+ TableRow,
+ TableCell,
+ TableBody,
+ Button,
+ Chip,
+ Slide,
+ TextField,
+ Stack,
+ InputAdornment,
+ CircularProgress,
 } from "@mui/material";
 
 import BlockIcon from "@mui/icons-material/Block";
@@ -20,189 +21,238 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import StarIcon from "@mui/icons-material/Star";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"; 
 
 import * as UserService from "../../Service/UserService";
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
+ return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const CustomerManagement = () => {
-  const [customers, setCustomers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const initialLoadRef = useRef(true);
+ const [customers, setCustomers] = useState([]);
+ const [searchTerm, setSearchTerm] = useState("");
+ const [loading, setLoading] = useState(false);
+ const initialLoadRef = useRef(true);
 
-  // 🔹 Fetch users
-  const fetchUsers = async (key = "") => {
-    setLoading(true);
-    try {
-      const res = await UserService.getAllUser(key);
-      if (res?.data) {
-        setCustomers(
-          res.data.map((user, index) => ({
-            id: user._id,
-            code: `KH${(index + 1).toString().padStart(3, "0")}`,
-            name: user.name || "Chưa có tên",
-            phone: user.phone || "Chưa có",
-            email: user.email || "Chưa có",
-            isBlocked: !!user.isBlocked,
-            rank: user.rank || "Thường",
-            address: user.address || "Chưa cập nhật",
-          }))
-        );
-      } else {
-        setCustomers([]);
-      }
-    } catch (error) {
-      console.error("❌ Lỗi khi tải danh sách người dùng:", error);
-      setCustomers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+ // 🔹 Fetch users: Thêm thuộc tính isAdmin từ API
+ const fetchUsers = async (key = "") => {
+  setLoading(true);
+  try {
+   const res = await UserService.getAllUser(key);
+   if (res?.data) {
+    setCustomers(
+     res.data.map((user, index) => ({
+      id: user._id,
+      code: `KH${(index + 1).toString().padStart(3, "0")}`,
+      name: user.name || "Chưa có tên",
+      phone: user.phone || "Chưa có",
+      email: user.email || "Chưa có",
+      isBlocked: !!user.isBlocked,
+      rank: user.rank || "Thường",
+      address: user.address || "Chưa cập nhật",
+      isAdmin: !!user.isAdmin, // <-- Đã thêm
+     }))
+    );
+   } else {
+    setCustomers([]);
+   }
+  } catch (error) {
+   console.error("❌ Lỗi khi tải danh sách người dùng:", error);
+   setCustomers([]);
+  } finally {
+   setLoading(false);
+  }
+ };
 
-  // ✅ Debounce search
-  useEffect(() => {
-    if (initialLoadRef.current) {
-      fetchUsers("");
-      initialLoadRef.current = false;
-      return;
-    }
-    const delayDebounceFn = setTimeout(() => {
-      fetchUsers(searchTerm.trim());
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+ // ✅ Debounce search
+ useEffect(() => {
+  if (initialLoadRef.current) {
+   fetchUsers("");
+   initialLoadRef.current = false;
+   return;
+  }
+  const delayDebounceFn = setTimeout(() => {
+   fetchUsers(searchTerm.trim());
+  }, 500);
+  return () => clearTimeout(delayDebounceFn);
+ }, [searchTerm]);
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+ const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
-  // 🔒 Toggle block / unblock
-  const handleToggleBlock = async (id, isBlocked) => {
-    const action = isBlocked ? "mở khóa" : "khóa";
-    if (!window.confirm(`Bạn có chắc chắn muốn ${action} tài khoản này không?`)) return;
+ // 🔒 Toggle block / unblock: Ngăn chặn thao tác với tài khoản Admin
+ const handleToggleBlock = async (id, isBlocked, isAdmin) => {
+  const action = isBlocked ? "mở khóa" : "khóa";
 
-    try {
-      const res = await UserService.updateUserStatus(id, !isBlocked);
-      if (res && res.message) {
-        // Cập nhật trạng thái trực tiếp trong state mà không gọi lại API
-        setCustomers((prev) =>
-          prev.map((c) =>
-            c.id === id ? { ...c, isBlocked: !isBlocked } : c
-          )
-        );
-        alert(`✅ Đã ${action} thành công!`);
-      } else {
-        alert(res.message || `❌ ${action} thất bại!`);
-      }
-    } catch (error) {
-      console.error(`❌ Lỗi khi ${action}:`, error);
-      alert(`Không thể ${action}. Vui lòng thử lại!`);
-    }
-  };
+  // KIỂM TRA QUẢN TRỊ VIÊN
+  if (isAdmin) {
+   alert("🚫 Không thể Khóa/Mở khóa tài khoản Quản trị viên (Admin)!");
+   return; // Dừng thao tác
+  }
 
-  const getRankColor = (rank) => (rank === "VIP" ? "success" : "default");
-  const getRankIcon = (rank) => (rank === "VIP" ? <StarIcon /> : <PersonIcon />);
+  if (!window.confirm(`Bạn có chắc chắn muốn ${action} tài khoản này không?`)) return;
 
-  return (
-    <Box sx={{ p: 4, zoom: 1 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4" fontWeight="bold">
-          Quản lý khách hàng
-        </Typography>
-        <TextField
-          label="Tìm kiếm theo Tên, SĐT, Email..."
-          variant="outlined"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          sx={{ width: 400 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Stack>
+  try {
+   const res = await UserService.updateUserStatus(id, !isBlocked);
+   if (res && res.message) {
+    setCustomers((prev) =>
+     prev.map((c) =>
+      c.id === id ? { ...c, isBlocked: !isBlocked } : c
+     )
+    );
+    alert(`✅ Đã ${action} thành công!`);
+   } else {
+    alert(res.message || `❌ ${action} thất bại!`);
+   }
+  } catch (error) {
+   console.error(`❌ Lỗi khi ${action}:`, error);
+   alert(`Không thể ${action}. Vui lòng thử lại!`);
+  }
+ };
 
-      {loading ? (
-        <Box sx={{ py: 5, textAlign: "center" }}>
-          <Typography variant="h6">Đang tải dữ liệu khách hàng...</Typography>
-        </Box>
-      ) : (
-        <Table
-          sx={{
-            backgroundColor: "#fff",
-            boxShadow: 3,
-            borderRadius: 2,
-            "& th, & td": { fontSize: "1rem", padding: "14px 16px" },
-          }}
-        >
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-            <TableRow>
-              <TableCell><strong>Mã KH</strong></TableCell>
-              <TableCell><strong>Tên khách hàng</strong></TableCell>
-              <TableCell><strong>Điện thoại</strong></TableCell>
-              <TableCell><strong>Email</strong></TableCell>
-              <TableCell><strong>Hạng</strong></TableCell>
-              <TableCell><strong>Trạng thái</strong></TableCell>
-              <TableCell align="center"><strong>Thao tác</strong></TableCell>
-            </TableRow>
-          </TableHead>
+ const getRankColor = (rank) => (rank === "VIP" ? "secondary" : "default");
+ const getRankIcon = (rank) => (rank === "VIP" ? <StarIcon sx={{ color: '#ffc107' }} /> : <PersonIcon />); 
 
-          <TableBody>
-            {customers.length > 0 ? (
-              customers.map((customer) => (
-                <TableRow key={customer.id} hover>
-                  <TableCell>{customer.code}</TableCell>
-                  <TableCell>{customer.name}</TableCell>
-                  <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.email}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={customer.rank}
-                      color={getRankColor(customer.rank)}
-                      icon={getRankIcon(customer.rank)}
-                      sx={{ fontWeight: "bold", fontSize: "1rem" }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={customer.isBlocked ? "Bị khóa" : "Hoạt động"}
-                      color={customer.isBlocked ? "error" : "success"}
-                      sx={{ fontWeight: "bold", fontSize: "1rem" }}
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Button
-                      variant="contained"
-                      color={customer.isBlocked ? "success" : "error"}
-                      startIcon={customer.isBlocked ? <LockOpenIcon /> : <BlockIcon />}
-                      onClick={() => handleToggleBlock(customer.id, customer.isBlocked)}
-                      sx={{ fontSize: "1rem", fontWeight: "bold" }}
-                    >
-                      {customer.isBlocked ? "Mở khóa" : "Khóa"}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  <Typography variant="subtitle1" color="textSecondary">
-                    {searchTerm
-                      ? `Không tìm thấy khách hàng nào với từ khóa "${searchTerm}".`
-                      : "Chưa có dữ liệu khách hàng."}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      )}
+ return (
+  <Box sx={{ p: 4, backgroundColor: '#f4f6f8', minHeight: '100vh' }}>
+   <Stack 
+    direction={{ xs: 'column', sm: 'row' }} 
+    justifyContent="space-between" 
+    alignItems={{ xs: 'flex-start', sm: 'center' }} 
+    mb={4}
+    spacing={2}
+   >
+    <Typography variant="h4" fontWeight="bold" sx={{ color: '#1a237e' }}>
+     👥 Quản lý khách hàng
+    </Typography>
+    <TextField
+     label="Tìm kiếm theo Tên, SĐT, Email..."
+     variant="outlined"
+     size="small"
+     value={searchTerm}
+     onChange={handleSearchChange}
+     sx={{ width: { xs: '100%', sm: 400 }, backgroundColor: '#fff', borderRadius: 1 }}
+     InputProps={{
+      startAdornment: (
+       <InputAdornment position="start">
+        <SearchIcon color="action" />
+       </InputAdornment>
+      ),
+     }}
+    />
+   </Stack>
+
+   {loading ? (
+    <Box sx={{ py: 10, textAlign: "center", backgroundColor: '#fff', borderRadius: 2, boxShadow: 1 }}>
+     <CircularProgress color="primary" size={50} />
+     <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
+      Đang tải dữ liệu khách hàng...
+     </Typography>
     </Box>
-  );
+   ) : (
+    <Box sx={{ overflowX: 'auto' }}>
+     <Table
+      sx={{
+       minWidth: 800,
+       backgroundColor: "#fff",
+       boxShadow: 6,
+       borderRadius: 2,
+       borderCollapse: 'separate',
+       '& th, & td': { 
+        fontSize: "1rem", 
+        padding: "16px 20px", 
+        borderBottom: '1px solid #eee'
+       },
+      }}
+     >
+      <TableHead sx={{ backgroundColor: "#e3f2fd" }}>
+       <TableRow>
+        <TableCell sx={{ color: '#1a237e' }}><strong>Mã KH</strong></TableCell>
+        <TableCell sx={{ color: '#1a237e' }}><strong>Tên khách hàng</strong></TableCell>
+        <TableCell sx={{ color: '#1a237e' }}><strong>Điện thoại</strong></TableCell>
+        <TableCell sx={{ color: '#1a237e' }}><strong>Email</strong></TableCell>
+        <TableCell sx={{ color: '#1a237e' }}><strong>Hạng</strong></TableCell>
+        <TableCell sx={{ color: '#1a237e' }}><strong>Trạng thái</strong></TableCell>
+        <TableCell align="center" sx={{ color: '#1a237e' }}><strong>Thao tác</strong></TableCell>
+       </TableRow>
+      </TableHead>
+
+      <TableBody>
+       {customers.length > 0 ? (
+        customers.map((customer) => (
+         <TableRow 
+          key={customer.id} 
+          hover 
+          sx={{ 
+           '&:last-child td': { borderBottom: 0 },
+           // Nhấn mạnh hàng Admin bằng màu nền
+           ...(customer.isAdmin && { backgroundColor: '#fffbe5' }) 
+          }}
+         >
+          <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>{customer.code}</TableCell>
+          <TableCell>{customer.name}</TableCell>
+          <TableCell>{customer.phone}</TableCell>
+          <TableCell sx={{ color: 'text.secondary', fontStyle: 'italic' }}>{customer.email}</TableCell>
+          <TableCell>
+           <Chip
+            label={customer.rank}
+            color={getRankColor(customer.rank)}
+            icon={getRankIcon(customer.rank)}
+            sx={{ fontWeight: "bold", fontSize: "0.9rem", height: 32 }}
+           />
+          </TableCell>
+          <TableCell>
+           <Chip
+            label={customer.isBlocked ? "Bị khóa" : "Hoạt động"}
+            color={customer.isBlocked ? "error" : "success"}
+            size="small"
+            sx={{ fontWeight: "bold", fontSize: "0.85rem" }}
+           />
+          </TableCell>
+          <TableCell align="center">
+           <Button
+            // Vô hiệu hóa nút nếu là Admin
+            disabled={customer.isAdmin} 
+            // Button style
+            variant={customer.isAdmin || customer.isBlocked ? "contained" : "outlined"}
+            size="small"
+            // Màu sắc
+            color={customer.isAdmin ? "primary" : (customer.isBlocked ? "success" : "error")}
+            // Icon
+            startIcon={
+             customer.isAdmin ? <AdminPanelSettingsIcon /> : (customer.isBlocked ? <LockOpenIcon /> : <BlockIcon />)
+            }
+            // Truyền isAdmin vào hàm xử lý
+            onClick={() => handleToggleBlock(customer.id, customer.isBlocked, customer.isAdmin)}
+            sx={{ 
+             fontSize: "0.9rem", 
+             fontWeight: "bold", 
+             padding: '6px 12px',
+             minWidth: '120px'
+            }}
+           >
+            {customer.isAdmin ? "Quản trị viên" : (customer.isBlocked ? "Mở khóa" : "Khóa")}
+           </Button>
+          </TableCell>
+         </TableRow>
+        ))
+       ) : (
+        <TableRow>
+         <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
+          <Typography variant="subtitle1" color="textSecondary" sx={{ fontSize: '1.1rem' }}>
+           {searchTerm
+            ? `Không tìm thấy khách hàng nào với từ khóa "${searchTerm}".`
+            : "Chưa có dữ liệu khách hàng."}
+          </Typography>
+         </TableCell>
+        </TableRow>
+       )}
+      </TableBody>
+     </Table>
+    </Box>
+   )}
+  </Box>
+ );
 };
 
 export default CustomerManagement;

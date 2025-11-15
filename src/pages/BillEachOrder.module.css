@@ -316,3 +316,98 @@
         max-width: 100%;
     }
 }
+
+
+/* File: BillEachOrder.module.css (Thêm vào cuối file CSS của bạn) */
+
+.cancelButton {
+    background-color: #dc3545; /* Đỏ */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Chiếm toàn bộ chiều rộng (tùy chỉnh) */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cancelButton:hover {
+    background-color: #c82333; /* Đỏ đậm hơn khi hover */
+}
+
+.cancelButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Tùy chọn: Đảm bảo các status màu sắc đã được định nghĩa */
+.statusBadge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+}
+
+.statusSuccess { background-color: #28a745; } /* Xanh lá */
+.statusCancelled { background-color: #6c757d; } /* Xám */
+.statusShipping { background-color: #ffc107; color: #333; } /* Vàng */
+.statusConfirmed { background-color: #007bff; } /* Xanh dương */
+.statusPending { background-color: #fd7e14; } /* Cam */
+
+/* File: frontend/src/pages/BillEachOrder.module.css */
+
+/* ... (Các styles đã có: detailContainer, backButtonTop, mainTitle, summaryGrid, statusBadge, v.v.) ... */
+
+/* Thêm class để chứa các nút hành động */
+.actionButtons {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa các nút */
+    justify-content: flex-end; /* Đẩy các nút sang phải */
+    margin-bottom: 20px;
+}
+
+/* Style cho nút HỦY ĐƠN HÀNG */
+.cancelButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #e74c3c; /* Màu đỏ */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+/* Style cho nút MUA LẠI ĐƠN HÀNG (MỚI) */
+.reorderButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #2ecc71; /* Màu xanh lá */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reorderButton:hover:not(:disabled) {
+    background-color: #27ae60;
+}
+
+/* Style cho nút bị disable (Hủy hoặc Mua lại) */
+.cancelButton:disabled, .reorderButton:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

@@ -13,6 +13,8 @@ import ProfilePage from "../pages/ProfilePage";
 import AdminLogin from "../pages/AdminPage/AdminLogin";
 import OrderDetail from "../components/OrderComponent/OrderDetail.jsx";
 import BillEachOrder from "../pages/BillEachOrder.jsx";
+import ShippingPage from "../pages/ShippingPage/ShippingPage.jsx";
+import EmployeeManagement from "../pages/AdminPage/EmployeeManagement.jsx";
 
 export const routes = [
     {
@@ -23,6 +25,11 @@ export const routes = [
      {
         path : '/profile',
         page: ProfilePage , 
+        isShowHeader: true
+    } ,
+     {
+        path : '/ship',
+        page: ShippingPage , 
         isShowHeader: true
     } ,
      {
@@ -57,6 +64,7 @@ export const routes = [
         page: detailProduct,
         isShowHeader: true
     } ,
+
      
      {
         path : '/signup',
@@ -92,6 +100,11 @@ export const routes = [
           isShowHeader: false
     } ,
     
+      {
+        path : '/Employee-Management',
+        page: EmployeeManagement,
+        isShowHeader: false
+    } ,
     
 
 ]

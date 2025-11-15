@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row, Pagination, Input } from "antd"; // ✅ Thêm Input
+import { Col, Row, Pagination, Input } from "antd"; 
 import "./Title.css";
 import h1 from "../../assets/img/3.jpg";
 import * as ProductService from "../../Service/ProductService";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-const { Search } = Input; // Lấy component Search từ Ant Design
+const { Search } = Input; 
 
 const Title = () => {
     const navigate = useNavigate();
@@ -20,11 +20,14 @@ const Title = () => {
     const [categories, setCategories] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
-    const [searchKey, setSearchKey] = useState(""); // 🌟 STATE MỚI: Từ khóa tìm kiếm
+    const [searchKey, setSearchKey] = useState("");
+    // 🌟 STATE MỚI: ID danh mục được chọn
+    const [selectedCategory, setSelectedCategory] = useState(""); 
     const [isSearching, setIsSearching] = useState(false); 
 
     const limit = 12;
 
+    // --- LẤY DANH MỤC ---
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -37,17 +40,19 @@ const Title = () => {
         fetchCategories();
     }, []);
 
-    // 🌟 useEffect CẬP NHẬT: Kích hoạt khi currentPage HOẶC searchKey thay đổi
+    // --- LẤY SẢN PHẨM (Kích hoạt khi currentPage, searchKey, HOẶC selectedCategory thay đổi) ---
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsSearching(true);
                 
-                // ✅ Gửi tham số name (searchKey) vào ProductService
+                // 💡 LƯU Ý: Đảm bảo hàm ProductService.getAllProduct của bạn
+                // chấp nhận tham số 'type' (mã danh mục)
                 const res = await ProductService.getAllProduct({
                     limit,
                     page: currentPage - 1,
                     name: searchKey, 
+                    type: selectedCategory // ✅ Gửi mã danh mục được chọn
                 });
 
                 setProducts(res.data || []);
@@ -59,7 +64,7 @@ const Title = () => {
             }
         };
         fetchData();
-    }, [currentPage, searchKey]); // ✅ Dependencies: currentPage và searchKey
+    }, [currentPage, searchKey, selectedCategory]); // ✅ Dependencies MỚI
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -78,12 +83,32 @@ const Title = () => {
         alert(`Đã thêm "${product.name}" vào giỏ hàng!`);
     };
     
-    // 🌟 HÀM XỬ LÝ TÌM KIẾM
+    // --- XỬ LÝ TÌM KIẾM ---
     const onSearch = (value) => {
-        // Đặt lại về trang 1 và cập nhật từ khóa (kích hoạt useEffect)
+        // Reset về trang 1 và bỏ chọn danh mục khi tìm kiếm
         setCurrentPage(1);
+        setSelectedCategory(""); // ✅ Xóa lọc danh mục khi tìm kiếm
         setSearchKey(value);
     };
+
+    // --- 🌟 HÀM XỬ LÝ CHỌN DANH MỤC MỚI ---
+    const handleCategoryClick = (categoryName) => {
+        // 1. Nếu đang chọn lại danh mục đó, thì bỏ chọn
+        if (selectedCategory === categoryName) {
+            setSelectedCategory(""); // Bỏ lọc
+        } else {
+            // 2. Chọn danh mục mới
+            setSelectedCategory(categoryName);
+        }
+        
+        // Luôn reset trang và xóa từ khóa tìm kiếm khi lọc theo danh mục
+        setCurrentPage(1);
+        setSearchKey(""); 
+    };
+
+    // Hàm kiểm tra xem danh mục đang được chọn hay không
+    const isCategorySelected = (categoryName) => selectedCategory === categoryName;
+
 
     return (
         <div className="container">
@@ -99,8 +124,11 @@ const Title = () => {
                                 allowClear
                                 enterButton="Tìm"
                                 size="large"
-                                onSearch={onSearch} // Xử lý tìm kiếm
-                                loading={isSearching} // Hiện loading khi đang tìm
+                                onSearch={onSearch}
+                                loading={isSearching}
+                                // Hiển thị từ khóa hiện tại (nếu có)
+                                value={searchKey} 
+                                onChange={(e) => setSearchKey(e.target.value)}
                             />
                         </div>
 
@@ -109,9 +137,24 @@ const Title = () => {
                             <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>Danh Mục</h3>
                             {categories.length > 0 ? (
                                 categories.map((cat, index) => (
-                                    <div key={index} className="h2c">
+                                    <div 
+                                        key={index} 
+                                        className="h2c" 
+                                        style={{ 
+                                            backgroundColor: isCategorySelected(cat.name) ? '#ffeedd' : 'transparent',
+                                            padding: '5px 0',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => handleCategoryClick(cat.name)} // ✅ Kích hoạt lọc
+                                    >
                                         <h2>
-                                            <a href="#">{cat.name}</a>
+                                            <a style={{ 
+                                                color: isCategorySelected(cat.name) ? '#F37004' : '#333', 
+                                                fontWeight: isCategorySelected(cat.name) ? 'bold' : 'normal' 
+                                            }}>
+                                                {cat.name}
+                                            </a>
                                         </h2>
                                     </div>
                                 ))
@@ -127,10 +170,14 @@ const Title = () => {
 
                 {/* --- Cột sản phẩm --- */}
                 <Col span={18}>
-                    {/* Hiển thị tiêu đề tìm kiếm nếu có từ khóa */}
-                    {searchKey && (
-                        <h2 style={{ fontSize: '1.5rem', marginBottom: '20px', color: '#F37004' }}>
-                            Kết quả tìm kiếm cho: "{searchKey}"
+                    {/* Tiêu đề hiển thị lọc/tìm kiếm */}
+                    {searchKey || selectedCategory ? (
+                        <h2 style={{ fontSize: '1.5rem', marginBottom: '20px', color: '#F37004', paddingLeft: '20px' }}>
+                            {selectedCategory && !searchKey ? `Danh mục: "${selectedCategory}"` : `Kết quả tìm kiếm cho: "${searchKey}"`}
+                        </h2>
+                    ) : (
+                        <h2 style={{ fontSize: '1.5rem', marginBottom: '20px', color: '#333', paddingLeft: '20px' }}>
+                            Tất Cả Món Ăn
                         </h2>
                     )}
                     
@@ -192,7 +239,9 @@ const Title = () => {
                                 ))
                             ) : (
                                 <p style={{ paddingLeft: '20px' }}>
-                                    Không tìm thấy sản phẩm nào {searchKey ? `cho từ khóa "${searchKey}"` : ''}.
+                                    Không tìm thấy sản phẩm nào
+                                    {searchKey && ` cho từ khóa "${searchKey}"`}
+                                    {selectedCategory && !searchKey && ` trong danh mục "${selectedCategory}"`}.
                                 </p>
                             )}
                         </Row>

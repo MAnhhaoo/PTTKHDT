@@ -63,7 +63,7 @@ const DetailProduct = () => {
             <h2>{product.name}</h2>
             <p className="price">Giá: {product.price.toLocaleString()}₫</p>
             <p><strong>Loại:</strong> {product.type}</p>
-            <p><strong>Còn lại:</strong> {product.countInStock ?? 0}</p>
+            {/* <p><strong>Còn lại:</strong> {product.countInStock ?? 0}</p> */}
             <p><strong>Đánh giá:</strong> {product.rating ?? 0} ⭐</p>
             <p className="description">
               <strong>Mô tả:</strong> {product.description || "Không có mô tả."}

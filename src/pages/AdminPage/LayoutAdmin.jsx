@@ -1,3 +1,5 @@
+// File: frontend/src/components/Admin/LayoutAdmin.jsx
+
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -12,7 +14,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Button, // ✅ THÊM: import Button để dùng nút Đăng xuất
+  Button,
 } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -24,15 +26,16 @@ import CategoryIcon from "@mui/icons-material/Category";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import PeopleIcon from "@mui/icons-material/People";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import PaymentIcon from "@mui/icons-material/Payment";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import LogoutIcon from "@mui/icons-material/Logout"; // ✅ THÊM: icon đăng xuất
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom"; // ✅ SỬA: thêm useNavigate để điều hướng sau khi logout
+// import PaymentIcon from "@mui/icons-material/Payment";
+// import SettingsIcon from "@mui/icons-material/Settings";
+// import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import LogoutIcon from "@mui/icons-material/Logout";
+import EngineeringIcon from "@mui/icons-material/Engineering"; // ✅ THÊM: Icon cho Nhân viên
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom"; 
 
 const drawerWidth = 260;
 
-/* ✅ THÊM: phần mixin & styled component bị thiếu (AppBar, Drawer, DrawerHeader) */
+/* --- Mixins và Styled Components (Giữ nguyên) --- */
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -96,8 +99,9 @@ const Drawer = styled(MuiDrawer, {
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
 }));
+/* ------------------------------------------------ */
 
-/* ✅ PHẦN CÒN LẠI LÀ CODE CỦA MÀY (giữ nguyên hoàn toàn) */
+
 export default function LayoutAdmin() {
   const theme = useTheme();
   const location = useLocation();
@@ -134,28 +138,19 @@ export default function LayoutAdmin() {
       icon: <PeopleIcon />,
       path: "/admin/Customer-Management",
     },
-    // {
-    //   text: "Quản Lý Thanh Toán",
-    //   icon: <PaymentIcon />,
-    //   path: "/admin/payment",
-    // },
-    // {
-    //   text: "Shipping Management",
-    //   icon: <LocalShippingIcon />,
-    //   path: "/admin/shipping",
-    // },
-    // {
-    //   text: "System Settings",
-    //   icon: <SettingsIcon />,
-    //   path: "/admin/settings",
-    // },
+    // ✅ THÊM MỤC QUẢN LÝ NHÂN VIÊN
+    {
+      text: "Quản Lý Nhân Viên",
+      icon: <EngineeringIcon />, // Sử dụng EngineeringIcon
+      path: "/Employee-Management", // Đường dẫn mới
+    },
   ];
 
 return (
   <Box
     sx={{
       display: "flex",
-      zoom: 1.2, // ✅ DÙNG zoom thay cho transform để phóng to toàn bộ
+      zoom: 1.2,
     }}
   >
     <CssBaseline />
@@ -183,8 +178,9 @@ return (
       </DrawerHeader>
 
       <Divider />
-
-      <List>
+      
+      {/* Danh sách Menu */}
+      <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
             <ListItemButton
@@ -216,34 +212,41 @@ return (
       </List>
 
       <Divider />
-      <Box sx={{ mt: "auto", mb: 2, textAlign: "center" }}>
-        <Button
-          variant="outlined"
-          color="error"
-          startIcon={<LogoutIcon />}
-          onClick={handleLogout}
-          sx={{
-            textTransform: "none",
-            width: open ? "80%" : "auto",
-            mx: open ? "auto" : 1,
-  	  display: "flex",
-  	  justifyContent: open ? "center" : "flex-start",
+      
+      {/* Nút Đăng xuất ở cuối Drawer */}
+      <Box sx={{ p: 1.5, textAlign: "center" }}>
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={<LogoutIcon />}
+          onClick={handleLogout}
+          sx={{
+            textTransform: "none",
+            width: open ? "100%" : "auto", // Khi mở thì full width
+            minWidth: 40,
+            
+            // Ẩn chữ 'Đăng xuất' khi đóng Drawer, chỉ hiện Icon
+            ...(open ? {} : { 
+                '& .MuiButton-startIcon': { margin: 0 }, 
+                p: '8px', 
+                minHeight: 40
+            }), 
 
-  	  "&:hover": {
-    	    backgroundColor: "error.main", 
-    	    color: "white", 
-  	  },
-  	}}>
-          {open && "Đăng xuất"}
-        </Button>
-      </Box>
-    </Drawer>
+            "&:hover": {
+              backgroundColor: "error.main", 
+              color: "white", 
+            },
+          }}>
+          {open && "Đăng xuất"}
+        </Button>
+      </Box>
+    </Drawer>
 
-    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-      <DrawerHeader />
-      <Outlet />
-    </Box>
-  </Box>
+    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <DrawerHeader />
+      <Outlet />
+    </Box>
+  </Box>
 );
 
 }
