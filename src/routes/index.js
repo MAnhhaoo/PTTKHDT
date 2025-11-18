@@ -100,11 +100,11 @@ export const routes = [
           isShowHeader: false
     } ,
     
-      {
-        path : '/Employee-Management',
-        page: EmployeeManagement,
-        isShowHeader: false
-    } ,
+    //   {
+    //     path : '/admin/Employee-Management',
+    //     page: EmployeeManagement,
+    //     isShowHeader: false
+    // } ,
     
 
 ]

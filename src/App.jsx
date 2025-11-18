@@ -1,75 +1,96 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-  // import {
-  //   useQuery,
-  // } from '@tanstack/react-query'
+// src/App.jsx
 
-import { routes } from "./routes/index"
-import Default from "./components/DefaultComponent/Default";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react"; // <-- Import useEffect
+import { useDispatch } from "react-redux"; // <-- Import useDispatch
+import * as jwt_decode from "jwt-decode"; 
+
+// Redux action
+import { setUser } from "./redux/userSlide"; // <-- Đảm bảo đường dẫn đúng
+
+// Components Admin
+import AdminLogin from "./pages/AdminPage/AdminLogin";
 import LayoutAdmin from "./pages/AdminPage/LayoutAdmin";
 import Dashboard from "./pages/AdminPage/Dashboard";
 import CategoryManagement from "./pages/AdminPage/CategoryManagement";
 import ProductManagement from "./pages/AdminPage/ProductManagement";
-import React from "react";
 import OrderManagement from "./pages/AdminPage/OrderManagement";
 import CustomerManagement from "./pages/AdminPage/CustomerManagement";
-// import axios from "axios";
+import AdminRouteGuard from "./components/AdminRouteGuard";
+import EmployeeManagement from "./pages/AdminPage/EmployeeManagement";
+// Components chung
+import { routes } from "./routes/index"
+import Default from "./components/DefaultComponent/Default";
 
 function App() {
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //     fetchApi();
-  //   }, []);
+  // ✅ LOGIC TẢI LẠI USER TỪ LOCAL STORAGE KHI ỨNG DỤNG TẢI LẠI
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const decoded = jwt_decode(token);
+        if (decoded?.id) {
+          // Giả định user info được lưu trong token payload
+          // Bạn có thể cần gọi API để lấy thông tin chi tiết nếu token không chứa đủ
+          const user = decoded.isAdmin ? { ...decoded, isAdmin: true } : decoded; 
+          dispatch(setUser({ user, token: token }));
+        }
+      } catch (e) {
+        console.error("Token invalid:", e);
+        localStorage.removeItem('access_token');
+      }
+    }
+  }, [dispatch]);
 
-  // const fetchApi = async () => {
-  //   try {
-  //     const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/product/getAllProduct`);
-  //     console.log("res", res.data);
-  //     return res.data
-  //   } catch (err) {
-  //     console.error("Lỗi gọi API:", err);
-  //   }
-  // };
-
-  //  const query = useQuery({ queryKey: ['todos'], queryFn: fetchApi , retry: false })
-  //  console.log("query" , query)
 
   return (
     <>
-     <div>
-      <Router>
-        <Routes>
-          {/* ✅ Bỏ route /admin trong mảng routes để tránh bị trùng */}
-          {routes
-            .filter((r) => r.path !== "/admin")
-            .map((route) => {
-              const Layout = route.isShowHeader ? Default : React.Fragment;
-              const Page = route.page;
-              return (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  element={
-                    <Layout>
-                      <Page /> 
-                    </Layout>
-                  }
-                />
-              );
-            })}
+      <div>
+        <Router>
+          <Routes>
+            {/* 1. Tuyến đường công khai và user thông thường */}
+            {routes
+              .filter((r) => r.path !== "/admin" && r.path !== "/admin-login")
+              .map((route) => {
+                const Layout = route.isShowHeader ? Default : React.Fragment;
+                const Page = route.page;
+                return (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={
+                      <Layout>
+                        <Page /> 
+                      </Layout>
+                    }
+                  />
+                );
+              })}
 
-          {/* ✅ Route riêng cho admin với các trang con */}
-        <Route path="/admin" element={<LayoutAdmin />}>
-          <Route index element={<Dashboard />} />
-          <Route path="Category-Management" element={<CategoryManagement />} />
-          <Route path="Product-Management" element={<ProductManagement />} /> 
-          <Route path="Order-Management" element={<OrderManagement />} />
-          <Route path="Customer-Management" element={<CustomerManagement />} />
-        </Route>
+            {/* 2. Tuyến đường Đăng nhập Admin (Không cần bảo vệ) */}
+            <Route path="/admin-login" element={<AdminLogin />} /> 
 
-        <Route path="*" element={<h2>404 - Không tìm thấy trang</h2>} />
-      </Routes>
-      </Router>
-     </div>
+            {/* ---------------------------------------------------- */}
+            {/* ✅ 3. Tuyến đường Bảo vệ Admin (Áp dụng AdminRouteGuard) */}
+            <Route element={<AdminRouteGuard />}>
+              <Route path="/admin" element={<LayoutAdmin />}>
+                <Route index element={<Dashboard />} />
+
+                <Route path="Category-Management" element={<CategoryManagement />} />
+                <Route path="Employee-Management" element={<EmployeeManagement />} />
+                <Route path="Product-Management" element={<ProductManagement />} /> 
+                <Route path="Order-Management" element={<OrderManagement />} />
+                <Route path="Customer-Management" element={<CustomerManagement />} />
+              </Route>
+            </Route>
+            {/* ---------------------------------------------------- */}
+
+            <Route path="*" element={<h2>404 - Không tìm thấy trang</h2>} />
+          </Routes>
+        </Router>
+      </div>
     </>
   )
 }

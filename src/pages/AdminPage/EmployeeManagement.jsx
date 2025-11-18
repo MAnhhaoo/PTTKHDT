@@ -135,18 +135,7 @@ const EmployeeManagement = () => {
   };
 
   return (
-    <Box sx={{ p: 4, zoom: 1.1 }}>
-      {/* Nút quay lại Dashboard */}
-      <Box sx={{ mb: 3 }}>
-        <Button
-          variant="outlined"
-          onClick={() => navigate('/admin')}
-          sx={{ mb: 2 }}
-        >
-          🔙 Quay lại Dashboard
-        </Button>
-      </Box>
-
+    <Box sx={{ p: 4, zoom: 1 }}>  {/* 🔥 Thu nhỏ toàn bộ giao diện */}
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         👨‍💼 Quản lý Nhân viên
       </Typography>
@@ -160,7 +149,12 @@ const EmployeeManagement = () => {
         Thêm nhân viên
       </Button>
 
-      <Table sx={{ backgroundColor: '#fff', boxShadow: 3, borderRadius: 2, "& th,& td": { fontSize: '1rem', padding: '12px 16px' } }}>
+      <Table sx={{
+        backgroundColor: '#fff',
+        boxShadow: 3,
+        borderRadius: 2,
+        "& th,& td": { fontSize: '1rem', padding: '10px 14px' }
+      }}>
         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
           <TableRow>
             <TableCell>Mã NV</TableCell>
@@ -174,6 +168,7 @@ const EmployeeManagement = () => {
             <TableCell align="center">Thao tác</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
           {employees.map(emp => (
             <TableRow key={emp._id} hover>
@@ -197,7 +192,6 @@ const EmployeeManagement = () => {
         </TableBody>
       </Table>
 
-      {/* Modal Thêm / Sửa */}
       <EmployeeFormModal
         isOpen={isModalOpen}
         handleClose={handleCloseModal}
@@ -205,7 +199,6 @@ const EmployeeManagement = () => {
         handleSubmit={handleFormSubmit}
       />
 
-      {/* Snackbar */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}

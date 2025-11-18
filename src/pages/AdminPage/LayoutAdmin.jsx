@@ -142,7 +142,7 @@ export default function LayoutAdmin() {
     {
       text: "Quản Lý Nhân Viên",
       icon: <EngineeringIcon />, // Sử dụng EngineeringIcon
-      path: "/Employee-Management", // Đường dẫn mới
+      path: "/admin/Employee-Management", // Đường dẫn mới
     },
   ];
 
