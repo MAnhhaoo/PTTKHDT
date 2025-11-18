@@ -65,3 +65,32 @@ export const cancelOrder = async (orderId, token) => {
         throw error;
     }
 };
+
+export const reviewProduct = async ({ orderId, productId, rating, comment }, token) => {
+    try {
+        const response = await axiosInstance.post(
+            `${BASE_URL_Order}/review`, // Endpoint Backend đã thiết lập
+            {
+                orderId,
+                productId,
+                rating,
+                comment,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Yêu cầu token xác thực người dùng
+                },
+            }
+        );
+        // Trả về toàn bộ response data (bao gồm status: 201)
+        return { status: response.status, data: response.data }; 
+    } catch (error) {
+        console.error("Lỗi khi gửi đánh giá:", error);
+        // Trả về chi tiết lỗi để component FE xử lý thông báo
+        return { 
+            status: error.response?.status || 500, 
+            message: error.response?.data?.message || "Lỗi server khi gửi đánh giá.",
+            error: error 
+        };
+    }
+};

@@ -1,5 +1,3 @@
-/* File: frontend/src/pages/BillEachOrder.module.css */
-
 /* --- Biến CSS (Dễ tùy chỉnh) --- */
 :root {
     --primary-color: #4f46e5; /* Indigo */
@@ -66,28 +64,14 @@
     margin-bottom: 2.5rem;
 }
 
-.summaryCard {
+.summaryBox {
     padding: 1.2rem;
     background-color: var(--bg-white);
     border-radius: 10px;
     border: 1px solid var(--primary-light);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    line-height: 1.8;
 }
-
-.summaryLabel {
-    font-size: 0.9rem;
-    color: var(--text-medium);
-    margin-bottom: 0.2rem;
-    font-weight: 500;
-}
-
-.orderIdText {
-    font-size: 1.2rem;
-    color: var(--primary-color) !important;
-    font-weight: 900;
-}
-
-/* --- THÔNG TIN VẬN CHUYỂN --- */
 .shippingBox {
     padding: 1.5rem;
     background-color: #eef1f6;
@@ -100,6 +84,12 @@
     color: var(--text-dark);
 }
 
+.boxTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
 
 /* --- DANH SÁCH SẢN PHẨM --- */
 .itemList {
@@ -143,7 +133,7 @@
 }
 
 .itemPrice {
-    color: #065f46; /* Green */
+    color: #065f46; 
     font-weight: 600;
     font-size: 1.05rem;
 }
@@ -154,7 +144,7 @@
     font-size: 0.95rem;
 }
 .itemSubtotal {
-    color: #b91c1c; /* Red */
+    color: #b91c1c; 
     font-weight: 800;
     font-size: 1.1rem;
     display: block;
@@ -172,25 +162,27 @@
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.totalRow {
+.totalBox p {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px dashed #cccccc;
     font-size: 1.05rem;
     color: var(--text-dark);
+    border-bottom: 1px dashed #cccccc;
 }
 
-.totalRowTotal {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 1rem;
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--text-dark);
+.totalBox p:last-of-type {
+    border-bottom: none;
 }
 
 .finalTotal {
+    font-size: 1.8rem !important;
+    color: var(--primary-color);
+    font-weight: 900 !important;
+    padding-top: 1rem !important;
+}
+
+.finalAmount {
     font-size: 1.8rem;
     color: var(--primary-color);
     font-weight: 900;
@@ -214,45 +206,249 @@
     text-decoration: underline;
 }
 
-/* --- STATUS BADGES (Tái sử dụng) --- */
-.statusBadge {
-    padding: 0.4rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border-radius: 20px;
-    border: 1px solid transparent;
-}
-.statusSuccess { background-color: #d1fae5; color: #065f46; border-color: #34d399; }
-.statusCancelled { background-color: #fee2e2; color: #991b1b; border-color: #f87171; }
-.statusShipping { background-color: #dbeafe; color: #1e40af; border-color: #60a5fa; }
-.statusConfirmed { background-color: #e0e7ff; color: #3730a3; border-color: #818cf8; }
-.statusPending { background-color: #fffbeb; color: #92400e; border-color: #fcd34d; }
-.statusDefault { background-color: #f7fafc; color: #4a5568; border-color: #a0aec0; }
+/* --- STATUS BADGES --- */
+.statusPending { background-color: #fffbeb; color: #92400e; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 700; border-radius: 20px; }
+.statusConfirmed { background-color: #e0e7ff; color: #3730a3; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 700; border-radius: 20px; }
+.statusShipping { background-color: #dbeafe; color: #1e40af; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 700; border-radius: 20px; }
+.statusSuccess { background-color: #d1fae5; color: #065f46; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 700; border-radius: 20px; }
+.statusCancelled { background-color: #fee2e2; color: #991b1b; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 700; border-radius: 20px; }
+.statusDefault { background-color: #f7fafc; color: #4a5568; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 700; border-radius: 20px; }
 
-/* --- LOADING/ERROR --- */
+/* --- ACTION BUTTONS --- */
+.actionButtons {
+    display: flex;
+    gap: 15px; 
+    justify-content: flex-end; 
+    margin-bottom: 20px;
+}
+
+.cancelButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #e74c3c; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+.reorderButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #2ecc71; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reorderButton:hover:not(:disabled) {
+    background-color: #27ae60;
+}
+
+.reviewToggleButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #3498db; /* Màu xanh da trời */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reviewToggleButton:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+.cancelButton:disabled, .reorderButton:disabled, .reviewToggleButton:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* --- OVERALL REVIEW FORM STYLES (MỚI) --- */
+
+.overallReviewContainer {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.overallReviewTitle {
+    color: var(--primary-color); 
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+}
+
+.overallReviewForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.singleItemReview {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.reviewItemImage {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.reviewItemDetails {
+    flex-grow: 1;
+}
+
+.reviewItemName {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.reviewedLabel {
+    margin-left: 10px;
+    padding: 2px 8px;
+    background-color: #d4edda; 
+    color: #155724; 
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.ratingInput {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.starFilledInteractive {
+    font-size: 1.8rem;
+    color: #ffc107; /* Vàng */
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.starEmptyInteractive {
+    font-size: 1.8rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.starFilledInteractive:hover, 
+.starEmptyInteractive:hover {
+    transform: scale(1.1);
+}
+
+.ratingSelection {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.commentTextareaInline {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid #ccc; 
+    border-radius: 3px;
+    font-size: 0.85rem;
+    resize: vertical; 
+}
+
+.submitOverallButton {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color); /* Indigo */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submitOverallButton:hover:not(:disabled) {
+    background-color: #3730a3;
+}
+
+.submitOverallButton:disabled {
+    background-color: #a5b4fc;
+    cursor: not-allowed;
+}
+
+
+/* --- Review Summary (Tóm tắt đánh giá đã gửi) --- */
+.itemReviewSummary {
+    margin-left: auto;
+    width: 250px;
+    padding-left: 15px;
+    border-left: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.reviewSummaryRating {
+    display: block;
+    font-weight: 600;
+    color: #007bff;
+    margin-top: 5px;
+}
+
+.starSummaryFilled {
+    color: #ffc107;
+}
+
+.starSummaryEmpty {
+    color: #ccc;
+}
+
+.reviewSummaryComment {
+    margin-top: 5px;
+    color: #555;
+    font-style: italic;
+}
+
+
+/* --- LOADING/ERROR & SPINNER --- */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
-.loadingContainer, .emptyContainer {
+.loading {
     text-align: center;
     padding: 5rem 1rem;
-}
-.spinner {
-    display: inline-block;
-    width: 3rem;
-    height: 3rem;
-    border: 4px solid var(--primary-light);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-}
-.loadingText {
-    margin-top: 1rem;
     font-size: 1.15rem;
     font-weight: 500;
     color: var(--primary-color);
 }
-.errorBox {
+.error {
     max-width: 600px;
     margin: 3rem auto;
     padding: 1.5rem;
@@ -261,28 +457,23 @@
     color: #991b1b;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(252, 165, 165, 0.3);
+    text-align: center;
 }
-.errorTitle {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+.notFound {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #6c757d;
 }
-.errorDetail {
-    padding: 0 1rem;
-}
-.backButton {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #dc2626; /* Red */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s;
-}
-.backButton:hover {
-    background-color: #b91c1c;
+
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
 }
 
 /* --- Responsive design --- */
@@ -296,6 +487,10 @@
     .summaryGrid {
         grid-template-columns: 1fr;
     }
+    .actionButtons {
+        flex-direction: column;
+        gap: 10px;
+    }
     .itemCard {
         flex-wrap: wrap;
         padding: 0.75rem;
@@ -305,6 +500,9 @@
         height: 60px;
         margin-right: 1rem;
     }
+    .itemInfo {
+        min-width: 50%;
+    }
     .itemQuantity {
         text-align: left;
         width: 100%;
@@ -312,102 +510,15 @@
         border-top: 1px dashed #eee;
         padding-top: 0.5rem;
     }
+    .itemReviewSummary {
+        width: 100%;
+        margin-top: 10px;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px dashed #eee;
+        padding-top: 10px;
+    }
     .totalBox {
         max-width: 100%;
     }
-}
-
-
-/* File: BillEachOrder.module.css (Thêm vào cuối file CSS của bạn) */
-
-.cancelButton {
-    background-color: #dc3545; /* Đỏ */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    transition: background-color 0.3s ease;
-    width: 100%; /* Chiếm toàn bộ chiều rộng (tùy chỉnh) */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.cancelButton:hover {
-    background-color: #c82333; /* Đỏ đậm hơn khi hover */
-}
-
-.cancelButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Tùy chọn: Đảm bảo các status màu sắc đã được định nghĩa */
-.statusBadge {
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    color: white;
-    display: inline-block;
-}
-
-.statusSuccess { background-color: #28a745; } /* Xanh lá */
-.statusCancelled { background-color: #6c757d; } /* Xám */
-.statusShipping { background-color: #ffc107; color: #333; } /* Vàng */
-.statusConfirmed { background-color: #007bff; } /* Xanh dương */
-.statusPending { background-color: #fd7e14; } /* Cam */
-
-/* File: frontend/src/pages/BillEachOrder.module.css */
-
-/* ... (Các styles đã có: detailContainer, backButtonTop, mainTitle, summaryGrid, statusBadge, v.v.) ... */
-
-/* Thêm class để chứa các nút hành động */
-.actionButtons {
-    display: flex;
-    gap: 15px; /* Khoảng cách giữa các nút */
-    justify-content: flex-end; /* Đẩy các nút sang phải */
-    margin-bottom: 20px;
-}
-
-/* Style cho nút HỦY ĐƠN HÀNG */
-.cancelButton {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #e74c3c; /* Màu đỏ */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.cancelButton:hover:not(:disabled) {
-    background-color: #c0392b;
-}
-
-/* Style cho nút MUA LẠI ĐƠN HÀNG (MỚI) */
-.reorderButton {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #2ecc71; /* Màu xanh lá */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.reorderButton:hover:not(:disabled) {
-    background-color: #27ae60;
-}
-
-/* Style cho nút bị disable (Hủy hoặc Mua lại) */
-.cancelButton:disabled, .reorderButton:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-    opacity: 0.6;
 }

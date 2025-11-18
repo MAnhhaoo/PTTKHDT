@@ -1,6 +1,6 @@
-// File: src/components/CartComponent/CartComponent.js (Đã sửa logic hiển thị ảnh)
+// File: src/components/CartComponent/CartComponent.js
 
-import React, {  useEffect } from "react"; 
+import React, { useEffect } from "react"; 
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import "./CartComponent.css";
@@ -8,14 +8,13 @@ import { useNavigate } from "react-router-dom";
 
 // 💡 ĐẶT BASE URL ẢNH Ở ĐÂY
 const BASE_URL = "http://localhost:3002"; 
-const DEFAULT_IMAGE_PATH = "/default_product.png"; // Thay bằng đường dẫn ảnh mặc định nếu có
+const DEFAULT_IMAGE_PATH = "/default_product.png"; 
 
 const CartComponent = () => {
-    const { cartItems: cart, updateQuantity, removeItem,  addMultipleItems } = useCart();
+    const { cartItems: cart, updateQuantity, removeItem, addMultipleItems } = useCart();
     const navigate = useNavigate(); 
-    // const [paymentMethod, setPaymentMethod] = useState("COD"); 
 
-    // 🟢 LOGIC MUA LẠI: ĐỌC DỮ LIỆU TỪ LOCAL STORAGE
+    // 🟢 LOGIC MUA LẠI: ĐỌC DỮ LIỆU TỪ LOCAL STORAGE (Giữ nguyên)
     useEffect(() => {
         const reorderItemsJson = localStorage.getItem('reorderItems');
         
@@ -35,20 +34,34 @@ const CartComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addMultipleItems]); 
 
-    // 💡 HÀM XỬ LÝ ĐƯỜNG DẪN ẢNH CHUẨN HÓA
+    // 💡 HÀM XỬ LÝ ĐƯỜNG DẪN ẢNH CHUẨN HÓA (ĐÃ CẢI TIẾN)
     const getImageUrl = (imagePath) => {
-        // Nếu không có đường dẫn hoặc đường dẫn không hợp lệ
-        if (!imagePath || typeof imagePath !== 'string' || imagePath.length < 5 || imagePath.toLowerCase().includes('default')) {
-             return `${BASE_URL}${DEFAULT_IMAGE_PATH}`;
+        let finalPath = imagePath;
+
+        // 1. Xử lý trường hợp imagePath là chuỗi JSON (dù đã cố gắng giải quyết ở BillEachOrder, vẫn nên giữ ở đây để bảo vệ)
+        if (typeof finalPath === 'string' && finalPath.startsWith('[')) {
+            try {
+                const parsed = JSON.parse(finalPath);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    finalPath = parsed[0]; // Lấy ảnh đầu tiên
+                }
+            } catch (e) {
+                // Nếu parse lỗi, giữ nguyên finalPath
+            }
         }
         
-        // 1. Kiểm tra nếu imagePath đã là đường dẫn tuyệt đối (có http/https)
-        if (imagePath.startsWith('http') || imagePath.startsWith('https')) {
-            return imagePath;
+        // 2. Kiểm tra nếu path rỗng hoặc không hợp lệ
+        if (!finalPath || typeof finalPath !== 'string' || finalPath.length < 5) {
+            return `${BASE_URL}${DEFAULT_IMAGE_PATH}`;
         }
         
-        // 2. Nếu là đường dẫn tương đối (ví dụ: /uploads/...)
-        const cleanedPath = imagePath.startsWith('/') ? imagePath : '/' + imagePath;
+        // 3. Kiểm tra nếu đã có URL đầy đủ (http/https)
+        if (finalPath.startsWith('http') || finalPath.startsWith('https')) {
+            return finalPath;
+        }
+        
+        // 4. Ghép với BASE URL (cho đường dẫn tương đối: /uploads/...)
+        const cleanedPath = finalPath.startsWith('/') ? finalPath : '/' + finalPath;
         return `${BASE_URL}${cleanedPath}`;
     };
 
@@ -94,7 +107,6 @@ const CartComponent = () => {
                         {cart.map((item) => (
                             <div key={item._id} className="cart-item">
                                 <div className="item-info">
-                                    {/* 🟢 SỬ DỤNG HÀM getImageUrl ĐÃ CẢI TIẾN */}
                                     <img
                                         src={getImageUrl(item.image)}
                                         alt={item.name}

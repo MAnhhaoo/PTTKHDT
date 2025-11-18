@@ -4,10 +4,8 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 
 const CartContext = createContext();
 
-// 🟢 EXPORT HOOK ĐỂ CÁC COMPONENT KHÁC GỌI
 export const useCart = () => useContext(CartContext);
 
-// 🟢 EXPORT PROVIDER
 export const CartProvider = ({ children }) => {
     // Khởi tạo state giỏ hàng từ LocalStorage
     const [cartItems, setCartItems] = useState(() => {
@@ -20,7 +18,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
     }, [cartItems]);
     
-    // Thêm sản phẩm
+    // Thêm sản phẩm (Hàm gốc không thay đổi)
     const addToCart = (product, quantity = 1) => {
         setCartItems(prevItems => {
             const exists = prevItems.find(item => item._id === product._id);
@@ -59,15 +57,15 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     }
 
-    // 🟢 HÀM MỚI: THÊM NHIỀU SẢN PHẨM CÙNG LÚC (Dành cho chức năng Mua lại)
+    // 🟢 HÀM MỚI: THÊM NHIỀU SẢN PHẨM CÙNG LÚC (Đã sửa đổi)
     const addMultipleItems = useCallback((newItems) => {
         setCartItems(prevItems => {
             let updatedItems = [...prevItems];
 
             newItems.forEach(newItem => {
-                // Đơn hàng cũ dùng 'product' làm ID và 'qty' làm số lượng
-                const productId = newItem.product; 
-                const itemQty = newItem.qty; 
+                // newItem đã được chuẩn bị với cấu trúc: {_id, name, price, image, quantity}
+                const productId = newItem._id; 
+                const itemQty = newItem.quantity; 
 
                 // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
                 const existingItemIndex = updatedItems.findIndex(item => item._id === productId);
@@ -76,14 +74,8 @@ export const CartProvider = ({ children }) => {
                     // Nếu đã có: Cập nhật tăng số lượng
                     updatedItems[existingItemIndex].quantity += itemQty;
                 } else {
-                    // Nếu chưa có: Thêm sản phẩm mới vào (với key _id là ID sản phẩm)
-                    updatedItems.push({
-                        _id: productId,
-                        name: newItem.name,
-                        price: newItem.price,
-                        image: newItem.image, // Lưu đường dẫn ảnh từ đơn hàng cũ
-                        quantity: itemQty,
-                    });
+                    // Nếu chưa có: Thêm sản phẩm mới vào 
+                    updatedItems.push(newItem);
                 }
             });
             return updatedItems;

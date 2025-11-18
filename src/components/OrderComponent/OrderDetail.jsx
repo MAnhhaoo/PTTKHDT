@@ -1,23 +1,33 @@
-// File: frontend/src/pages/OrderHistory.jsx
+// File: frontend/src/pages/OrderHistory.jsx (Hoàn chỉnh)
 
 import React, { useState, useEffect } from 'react';
 import { getMyOrders } from '../../Service/OrderService';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import styles from './OrderHistory.module.css'; // CSS module
+import styles from './OrderHistory.module.css'; 
+
+// ⭐ SỬA: Thay thế import lỗi
+// 1. Import hook useSocket TỪ THƯ MỤC HOOKS (Sẽ cung cấp isConnected)
+import { useSocket } from '../../hooks/useSocket'; 
+// 2. Import hàm lắng nghe onCustomerNotify TỪ SERVICE (Vì hàm này là Singleton)
+import { onCustomerNotify } from '../../Service/SocketService'; 
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    
+    // ⭐ SỬ DỤNG: Lấy trạng thái kết nối từ custom hook (Lấy từ SocketContext)
+    const { isConnected } = useSocket(); 
 
     const userState = useSelector(state => state.user); 
     const accessToken = userState?.token; 
     const isAuthenticated = userState?.isAuthenticated; 
+    const userId = userState?.user?.id; 
 
-    // Hàm xác định class CSS cho trạng thái đơn hàng
+    // Hàm xác định class CSS cho trạng thái đơn hàng (Giữ nguyên)
     const getStatusClass = (status) => {
         switch (status) {
             case 'Giao thành công': return styles.statusSuccess;
@@ -29,6 +39,7 @@ const OrderHistory = () => {
         }
     };
 
+    // 1. useEffect để tải đơn hàng ban đầu (Giữ nguyên)
     useEffect(() => {
         if (!isAuthenticated || !accessToken) {
             setError("Lỗi xác thực: Vui lòng đăng nhập để xem lịch sử đơn hàng.");
@@ -41,7 +52,6 @@ const OrderHistory = () => {
                 setLoading(true);
                 setError(null);
                 
-                // Giả định getMyOrders trả về object có thuộc tính .data là mảng đơn hàng
                 const response = await getMyOrders(token); 
                 
                 const ordersArray = response.data || response;
@@ -60,8 +70,29 @@ const OrderHistory = () => {
         fetchOrders(accessToken);
     }, [accessToken, isAuthenticated]);
 
+    // ⭐ 2. useEffect để lắng nghe cập nhật trạng thái real-time (Giữ nguyên, chỉ dùng onCustomerNotify)
+    useEffect(() => {
+        if (!userId) return; 
+
+        // onCustomerNotify trả về hàm cleanup
+        const cleanup = onCustomerNotify((data) => {
+            // Chỉ cập nhật nếu đơn hàng thuộc về người dùng đang đăng nhập
+            if (data.userId === userId) {
+                setOrders((prevOrders) =>
+                    prevOrders.map((order) =>
+                        order._id === data.orderId 
+                            ? { ...order, status: data.status } 
+                            : order
+                    )
+                );
+                console.log('✅ Cập nhật trạng thái đơn hàng real-time:', data);
+            }
+        });
+        
+        return cleanup; 
+    }, [userId]); 
     
-    // --- HIỂN THỊ TRẠNG THÁI LOADING/ERROR/EMPTY ---
+    // --- HIỂN THỊ TRẠNG THÁI LOADING/ERROR/EMPTY --- (Giữ nguyên)
     if (loading) return (
         <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
@@ -88,13 +119,19 @@ const OrderHistory = () => {
     // --- GIAO DIỆN HIỂN THỊ DANH SÁCH ĐƠN HÀNG ---
     return (
         <div className={styles.orderHistoryContainer}>
-            <h1 className={styles.mainTitle}>📜 Lịch Sử Đơn Hàng Của Tôi</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h1 className={styles.mainTitle}>📜 Lịch Sử Đơn Hàng Của Tôi</h1>
+                {isConnected && (
+                    <div style={{ color: '#4CAF50', fontSize: '14px', fontWeight: 'bold' }}>
+                        
+                    </div>
+                )}
+            </div>
             <div className={styles.orderList}>
                 {orders.map((order) => (
                     <div 
                         key={order._id} 
                         className={styles.orderCard}
-                        // CHUYỂN HƯỚNG SANG TRANG BILL (BillEachOrder.jsx)
                         onClick={() => navigate(`/orderEachProduct/${order._id}`)}
                     >
                         <div className={styles.cardHeader}>
@@ -103,10 +140,11 @@ const OrderHistory = () => {
                                     Đơn hàng # {order._id.slice(-8)}
                                 </h2>
                                 <p className={styles.orderDate}>
-                                    Ngày Đặt: **{format(new Date(order.createdAt), 'dd/MM/yyyy')}** lúc **{format(new Date(order.createdAt), 'HH:mm')}**
+                                    Ngày Đặt: {format(new Date(order.createdAt), 'dd/MM/yyyy')} lúc {format(new Date(order.createdAt), 'HH:mm')}
                                 </p>
                             </div>
                             
+                            {/* Trạng thái sẽ được cập nhật tự động nhờ Socket */}
                             <span className={`${styles.statusBadge} ${getStatusClass(order.status)}`}>
                                 {order.status}
                             </span>
@@ -116,7 +154,6 @@ const OrderHistory = () => {
                             <div className={styles.detailItem}>
                                 <span className={styles.icon}>💰</span>
                                 <span className={styles.detailLabel}>Tổng Tiền:</span>
-                                {/* Kiểm tra giá trị an toàn */}
                                 <span className={styles.totalPrice}>
                                     {(order.totalPrice || 0).toLocaleString('vi-VN')} VNĐ
                                 </span>
@@ -136,6 +173,6 @@ const OrderHistory = () => {
             </div>
         </div>
     );
-};
+}
 
 export default OrderHistory;

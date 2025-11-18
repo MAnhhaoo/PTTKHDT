@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { store } from '../src/redux/store.js'
 import { Provider } from 'react-redux'
 import { CartProvider } from './context/CartContext.jsx';
+import SocketProvider from './context/SocketContext.jsx';
 import './index.css'
 import App from './App.jsx'
 import { 
@@ -14,16 +15,16 @@ import {
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
-     <QueryClientProvider client={queryClient}>    <Provider store={store}>  <StrictMode>
-      <CartProvider>
-    <App />
-    </CartProvider>
-  </StrictMode>
-  </Provider>
+  <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <SocketProvider>
+        <StrictMode>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </StrictMode>
+      </SocketProvider>
+    </Provider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
-
-
-  ,
-
-)
+);
