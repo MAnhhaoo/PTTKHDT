@@ -23,9 +23,8 @@ const LoginComponent = () => {
       console.log("Đăng nhập thành công:", data);
 
       // 🧩 Lưu access_token
-      // localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("access_token", data.access_token);
 
-      // 🧠 Cập nhật Redux store
       dispatch(
         setUser({
           user: data.user, // phải trả về từ API
