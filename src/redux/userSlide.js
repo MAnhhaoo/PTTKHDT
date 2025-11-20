@@ -1,8 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// 🔹 Lấy dữ liệu từ localStorage khi khởi tạo
-const savedUser = JSON.parse(localStorage.getItem("user")) || null;
-const savedToken = localStorage.getItem("access_token") || null;
+// 🔹 Khởi tạo từ sessionStorage
+let savedUser = null;
+try {
+  const stored = sessionStorage.getItem("user");
+  savedUser = stored ? JSON.parse(stored) : null;
+
+  if (savedUser?.id && !savedUser._id) {
+    savedUser._id = savedUser.id;
+    delete savedUser.id;
+  }
+} catch (error) {
+  console.error("❌ JSON parse error in user:", error);
+  savedUser = null;
+}
+
+const savedToken = sessionStorage.getItem("access_token") || null;
 
 const initialState = {
   user: savedUser,
@@ -14,31 +27,50 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    // ==========================
+    // ✔ SET USER (Đăng nhập)
+    // ==========================
     setUser: (state, action) => {
-      state.user = action.payload.user;
+      let user = action.payload.user;
+
+      if (user.id && !user._id) {
+        user = { ...user, _id: user.id };
+        delete user.id;
+      }
+
+      state.user = user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
-      localStorage.setItem("user", JSON.stringify(action.payload.user));
-      localStorage.setItem("access_token", action.payload.token);
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+      sessionStorage.setItem("access_token", action.payload.token);
     },
 
+    // ==========================
+    // ✔ LOGOUT
+    // ==========================
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("user");
-      localStorage.removeItem("access_token");
+
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("access_token");
     },
 
-    // ...
-    // 🆕 Cập nhật thông tin user (sau khi chỉnh sửa hồ sơ)
+    // ==========================
+    // ✔ UPDATE USER INFO
+    // ==========================
     updateUser: (state, action) => {
-      // action.payload là object chứa các trường (name, email, phone, ...)
-      state.user = { ...state.user, ...action.payload }; // Merge dữ liệu mới
-      localStorage.setItem("user", JSON.stringify(state.user)); // cập nhật vào localStorage
-      // Lưu ý: hàm này KHÔNG CẬP NHẬT state.token
+      state.user = { ...state.user, ...action.payload };
+
+      if (state.user.id && !state.user._id) {
+        state.user._id = state.user.id;
+        delete state.user.id;
+      }
+
+      sessionStorage.setItem("user", JSON.stringify(state.user));
     },
-// ...
   },
 });
 

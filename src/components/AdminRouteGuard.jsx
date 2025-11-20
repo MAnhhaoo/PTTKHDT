@@ -1,24 +1,26 @@
-// src/components/AdminRouteGuard.jsx (Code đã đúng)
-
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+// src/components/AdminRouteGuard.jsx
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import { logout } from "../redux/userSlide"; // <-- action xóa user khỏi redux + sessionStorage
 
 const AdminRouteGuard = () => {
-  const userState = useSelector((state) => state.user); 
+  const dispatch = useDispatch();
+  const userState = useSelector((state) => state.user);
 
-  // Kiểm tra đã đăng nhập (có user object và token)
   const isAuthenticated = !!userState.user && !!userState.token;
-  
-  // Kiểm tra quyền Admin
   const isAdmin = userState.user?.isAdmin;
 
+  // 🔒 Nếu chưa đăng nhập hoặc không phải Admin
   if (!isAuthenticated || !isAdmin) {
-    // Nếu không phải Admin hoặc chưa đăng nhập, chuyển hướng về login
-    return <Navigate to="/admin-login" replace />; 
+    // Xóa dữ liệu sessionStorage cho chắc chắn
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("user");
+    dispatch(logout());
+    return <Navigate to="/admin-login" replace />;
   }
 
-  // Nếu là Admin, cho phép truy cập
+  // Cho phép truy cập
   return <Outlet />;
 };
 

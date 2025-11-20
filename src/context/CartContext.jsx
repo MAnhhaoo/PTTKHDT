@@ -8,10 +8,17 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
     // Khởi tạo state giỏ hàng từ LocalStorage
-    const [cartItems, setCartItems] = useState(() => {
+  const [cartItems, setCartItems] = useState(() => {
+    try {
         const localData = localStorage.getItem('cart');
         return localData ? JSON.parse(localData) : [];
-    });
+    } catch (error) {
+        console.error("❌ Lỗi parse cart từ localStorage:", error);
+        localStorage.removeItem('cart');
+        return [];
+    }
+});
+
 
     // Đồng bộ state giỏ hàng với LocalStorage
     useEffect(() => {

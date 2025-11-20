@@ -154,7 +154,7 @@ const LoginComponent = () => {
         </Row>
       </div>
     </div>
-  );
+  );  
 };
 
 export default LoginComponent;

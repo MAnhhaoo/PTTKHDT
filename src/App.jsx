@@ -3,7 +3,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { useEffect } from "react"; // <-- Import useEffect
 import { useDispatch } from "react-redux"; // <-- Import useDispatch
-import * as jwt_decode from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
+
+ 
 
 // Redux action
 import { setUser } from "./redux/userSlide"; // <-- Đảm bảo đường dẫn đúng
@@ -28,18 +30,22 @@ function App() {
   // ✅ LOGIC TẢI LẠI USER TỪ LOCAL STORAGE KHI ỨNG DỤNG TẢI LẠI
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    if (token) {
+    const savedUser = localStorage.getItem('user');
+    
+    if (token && savedUser) {
       try {
-        const decoded = jwt_decode(token);
-        if (decoded?.id) {
-          // Giả định user info được lưu trong token payload
-          // Bạn có thể cần gọi API để lấy thông tin chi tiết nếu token không chứa đủ
-          const user = decoded.isAdmin ? { ...decoded, isAdmin: true } : decoded; 
-          dispatch(setUser({ user, token: token }));
+        const decoded = jwtDecode(token);
+        const user = JSON.parse(savedUser);
+        
+        // Kiểm tra token có hợp lệ không
+        if (decoded && user) {
+          dispatch(setUser({ user, token }));
+          console.log('✅ Khôi phục user từ localStorage thành công');
         }
       } catch (e) {
-        console.error("Token invalid:", e);
+        console.error("❌ Token hoặc user invalid:", e);
         localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
       }
     }
   }, [dispatch]);

@@ -1,70 +1,79 @@
+// File: src/context/SocketProvider.jsx
+
 import React, { useEffect, useState } from 'react';
-import { 
-  initSocket, 
+import { useSelector } from 'react-redux';
+import { SocketContext } from './SocketContextFile';
+import {
+  initSocket,
   disconnectSocket,
   joinCustomerRoom,
   isSocketConnected,
 } from '../Service/SocketService';
-import { useSelector } from 'react-redux';
-import { SocketContext } from './SocketContextFile';
 
-// 🔌 Socket Provider Component
 const SocketProvider = ({ children }) => {
   const { user } = useSelector((state) => state.user);
   const [isConnected, setIsConnected] = useState(false);
+  const [socket, setSocket] = useState(null);
 
+  // 1️⃣ Init socket chỉ 1 lần khi component mount
   useEffect(() => {
-    // ✅ Khởi tạo Socket khi component mount
-    console.log('🔌 Initializing Socket...');
-    const socket = initSocket();
-    
-    if (!socket) return;
+    const s = initSocket();
+    if (!s) return;
+    setSocket(s);
 
     const handleConnect = () => {
       setIsConnected(true);
-      console.log('✅ Socket đã kết nối, socket.id:', socket.id);
-      
-      // Nếu là khách hàng, join room với userId
+      console.log('✅ Socket connected:', s.id);
+
+      // Nếu user đã login, join room
       if (user?.id) {
-        console.log('👤 Joining customer room with userId:', user.id);
         joinCustomerRoom(user.id);
+        console.log('👤 Joined customer room:', user.id);
       }
     };
 
     const handleDisconnect = () => {
       setIsConnected(false);
-      console.log('❌ Socket đã ngắt');
+      console.log('❌ Socket disconnected');
     };
 
-    // Nếu socket đã kết nối sẵn rồi
-    if (socket.connected) {
-      handleConnect();
-    } else {
-      // Đảm bảo listeners được thêm
-      socket.on('connect', handleConnect);
-      socket.on('disconnect', handleDisconnect);
-    }
+    // Lắng nghe event connect/disconnect
+    s.on('connect', handleConnect);
+    s.on('disconnect', handleDisconnect);
 
-    // ✅ Cleanup khi component unmount
+    // Cleanup khi unmount
     return () => {
-      if (socket) {
-        socket.removeListener('connect', handleConnect);
-        socket.removeListener('disconnect', handleDisconnect);
-      }
+      s.off('connect', handleConnect);
+      s.off('disconnect', handleDisconnect);
+      disconnectSocket();
     };
   }, [user?.id]);
 
-  // Cleanup khi user logout
+  // 2️⃣ Khi user login hoặc logout thay đổi
   useEffect(() => {
-    if (!user?.id && isSocketConnected()) {
-      console.log('👋 User logged out, disconnecting socket...');
-      disconnectSocket();
-      setIsConnected(false);
+    if (!socket) return;
+
+    if (user?.id) {
+      // Nếu socket đã connect, join room ngay
+      if (socket.connected) {
+        joinCustomerRoom(user.id);
+        console.log('👤 Joined customer room after login:', user.id);
+      } else {
+        // Nếu chưa connect, sẽ join trong handleConnect
+        console.log('⏳ Socket chưa connect, sẽ join room khi connect');
+      }
+    } else {
+      // User logout => rời room
+      if (isSocketConnected()) {
+        console.log('👋 User logged out, disconnect socket');
+        disconnectSocket();
+        setIsConnected(false);
+      }
     }
-  }, [user?.id]);
+  }, [user?.id, socket]);
 
   return (
-    <SocketContext.Provider value={{ isConnected, user }}>
+    <SocketContext.Provider value={{ isConnected, user, socket }}>
       {children}
     </SocketContext.Provider>
   );
