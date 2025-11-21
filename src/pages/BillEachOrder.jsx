@@ -10,9 +10,7 @@ import styles from './BillEachOrder.module.css';
 const BASE_URL = "http://localhost:3002"; 
 const DEFAULT_IMAGE_PATH = "/default_product.png"; 
 
-// --- HÀM HELPER VỀ ẢNH ---
 
-// Hàm lấy đường dẫn ảnh TƯƠNG ĐỐI sạch sẽ nhất để lưu vào giỏ hàng (Quan trọng cho chức năng Mua Lại)
 const getBestImagePathToReorder = (item) => {
     // Ưu tiên ảnh lưu trong đơn hàng (item.image), nếu không có thì lấy ảnh từ product object
     let path = item.image || item.product?.image || DEFAULT_IMAGE_PATH;
@@ -37,7 +35,6 @@ const getBestImagePathToReorder = (item) => {
     return path.startsWith('/') ? path : '/' + path;
 };
 
-// Hàm lấy URL ảnh ĐẦY ĐỦ để hiển thị trong BillEachOrder
 const getImageUrl = (imagePath) => {
     let finalPath = imagePath;
     

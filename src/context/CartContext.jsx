@@ -1,29 +1,52 @@
 // File: src/context/CartContext.js
 
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 
 const CartContext = createContext();
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+    const context = useContext(CartContext);
+    if (!context) {
+        throw new Error('useCart must be used within a CartProvider');
+    }
+    return context;
+};
 
 export const CartProvider = ({ children }) => {
-    // Khởi tạo state giỏ hàng từ LocalStorage
-  const [cartItems, setCartItems] = useState(() => {
-    try {
-        const localData = localStorage.getItem('cart');
-        return localData ? JSON.parse(localData) : [];
-    } catch (error) {
-        console.error("❌ Lỗi parse cart từ localStorage:", error);
-        localStorage.removeItem('cart');
-        return [];
-    }
-});
+    const { user } = useSelector((state) => state.user);
+    const userId = user?._id || user?.id || 'guest';
+    
+    // Khởi tạo state giỏ hàng từ LocalStorage (lưu riêng cho mỗi user)
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            const cartKey = `cart_${userId}`;
+            const localData = localStorage.getItem(cartKey);
+            return localData ? JSON.parse(localData) : [];
+        } catch (error) {
+            console.error("❌ Lỗi parse cart từ localStorage:", error);
+            localStorage.removeItem(`cart_${userId}`);
+            return [];
+        }
+    });
 
-
-    // Đồng bộ state giỏ hàng với LocalStorage
+    // Đồng bộ state giỏ hàng với LocalStorage khi cartItems hoặc userId thay đổi
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartItems));
-    }, [cartItems]);
+        const cartKey = `cart_${userId}`;
+        localStorage.setItem(cartKey, JSON.stringify(cartItems));
+    }, [cartItems, userId]);
+
+    // Khi user thay đổi (login/logout), tải giỏ hàng của user đó
+    useEffect(() => {
+        try {
+            const cartKey = `cart_${userId}`;
+            const localData = localStorage.getItem(cartKey);
+            setCartItems(localData ? JSON.parse(localData) : []);
+        } catch (error) {
+            console.error("❌ Lỗi khi chuyển user:", error);
+            setCartItems([]);
+        }
+    }, [userId]);
     
     // Thêm sản phẩm (Hàm gốc không thay đổi)
     const addToCart = (product, quantity = 1) => {

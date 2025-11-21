@@ -22,9 +22,6 @@ const LoginComponent = () => {
     onSuccess: (data) => {
       console.log("Đăng nhập thành công:", data);
 
-      // 🧩 Lưu access_token
-      localStorage.setItem("access_token", data.access_token);
-
       dispatch(
         setUser({
           user: data.user, // phải trả về từ API

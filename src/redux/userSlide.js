@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// 🔹 Khởi tạo từ sessionStorage
+// 🔹 Khởi tạo từ localStorage
 let savedUser = null;
 try {
-  const stored = sessionStorage.getItem("user");
+  const stored = localStorage.getItem("user");
   savedUser = stored ? JSON.parse(stored) : null;
 
   if (savedUser?.id && !savedUser._id) {
@@ -15,7 +15,7 @@ try {
   savedUser = null;
 }
 
-const savedToken = sessionStorage.getItem("access_token") || null;
+const savedToken = localStorage.getItem("access_token") || null;
 
 const initialState = {
   user: savedUser,
@@ -42,8 +42,8 @@ const userSlice = createSlice({
       state.token = action.payload.token;
       state.isAuthenticated = true;
 
-      sessionStorage.setItem("user", JSON.stringify(user));
-      sessionStorage.setItem("access_token", action.payload.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("access_token", action.payload.token);
     },
 
     // ==========================
@@ -54,6 +54,8 @@ const userSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
 
+      localStorage.removeItem("user");
+      localStorage.removeItem("access_token");
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("access_token");
     },
@@ -69,7 +71,7 @@ const userSlice = createSlice({
         delete state.user.id;
       }
 
-      sessionStorage.setItem("user", JSON.stringify(state.user));
+      localStorage.setItem("user", JSON.stringify(state.user));
     },
   },
 });
