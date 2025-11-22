@@ -62,7 +62,11 @@ const DetailProduct = () => {
           <div className="detail-info">
             <h2>{product.name}</h2>
             <p className="price">Giá: {product.price.toLocaleString()}₫</p>
-            <p><strong>Loại:</strong> {product.type}</p>
+            {/* Hiển thị danh mục/loại: ưu tiên `product.category.name`, fallback về `product.category` hoặc `product.type` */}
+            <p>
+              <strong>Loại:</strong>{' '}
+              {product.category?.name || product.category || product.type || 'Không rõ'}
+            </p>
             {/* <p><strong>Còn lại:</strong> {product.countInStock ?? 0}</p> */}
             {/* <p><strong>Đánh giá:</strong> {product.rating ?? 0} ⭐</p> */}
             <p className="description">

@@ -209,7 +209,7 @@ const handleOpenUpdate = (order) => {
 
 
   return (
-    <Box sx={{ p: 4, zoom: 1.1 }}>
+    <Box sx={{ p: 4, zoom: 1.0 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         Quản lý đơn hàng
       </Typography>
