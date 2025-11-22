@@ -35,7 +35,7 @@ function ProfilePage() {
   });
 
   const handleUpdateAll = () => {
-    const userId = user?.id;
+    const userId = user?._id || user?.id;
     if (!userId) return alert("Không tìm thấy ID người dùng.");
 
     const dataToUpdate = {};
