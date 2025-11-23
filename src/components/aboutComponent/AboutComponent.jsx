@@ -24,7 +24,7 @@ function AboutComponent() {
             <hr style={{height: "2px", backgroundColor: "black"}}/>
             <div style={{marginLeft: "25px" , fontSize: "15px"}}>
                 <p>
-                <a href="">
+                <a href="/menu">
                     Sản phẩm nổi bật
                 </a>
             </p>
